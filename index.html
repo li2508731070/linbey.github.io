@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Linbey – Dynamic Experience</title>
+    <!--
+      This site is inspired by the minimal, dynamic feel of Apple’s product
+      pages. It uses a full‑screen hero section with a parallax effect,
+      alternating light and dark feature sections, and smooth scroll‑triggered
+      animations. All of the styles live in ``style.css`` and the
+      interactive behaviour resides in ``script.js``.  You can adjust the
+      image URLs below to better match the products or themes you want to
+      showcase.  When publishing with GitHub Pages make sure these files live
+      in the root of the repository and that your CNAME continues to point
+      at the desired domain.
+    -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="brand">Linbey</div>
+      <nav>
+        <ul>
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#cta">Join</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero">
+      <div class="hero-content">
+        <h1>Experience the Future</h1>
+        <p>Dynamic design inspired by Apple</p>
+        <a href="#features" class="btn btn-primary">Discover More</a>
+      </div>
+    </section>
+
+    <!-- Feature Sections -->
+    <main id="features">
+      <section class="feature light">
+        <div class="container">
+          <div class="text hidden">
+            <h2>Seamless Performance</h2>
+            <p>
+              Built with modern web technologies, this template delivers
+              responsive performance on every device. The smooth animations and
+              intuitive layout keep your visitors engaged from the first
+              scroll.
+            </p>
+          </div>
+          <div class="image hidden">
+            <img
+              src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"
+              alt="High‑tech device"
+            />
+          </div>
+        </div>
+      </section>
+
+      <section class="feature dark">
+        <div class="container">
+          <div class="image hidden">
+            <img
+              src="https://images.unsplash.com/photo-1523475496153-3d6ccfd7ed5a?auto=format&fit=crop&w=800&q=80"
+              alt="Elegant computer"
+            />
+          </div>
+          <div class="text hidden">
+            <h2>Elegant Design</h2>
+            <p>
+              Clean aesthetics reminiscent of iconic products. Large
+              typography and generous white space highlight your content and
+              give your site a premium feel.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="feature light">
+        <div class="container">
+          <div class="text hidden">
+            <h2>Responsive &amp; Accessible</h2>
+            <p>
+              This layout adapts gracefully to any screen size and uses
+              semantic HTML to improve accessibility. Navigation links use
+              smooth scrolling for a polished experience.
+            </p>
+          </div>
+          <div class="image hidden">
+            <img
+              src="https://images.unsplash.com/photo-1503389152955-9e65c2a9414d?auto=format&fit=crop&w=800&q=80"
+              alt="Mobile devices"
+            />
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Call to Action -->
+    <section id="cta" class="cta hidden">
+      <h2>Join the Revolution</h2>
+      <p>Be part of the innovation driving the future of web experiences.</p>
+      <a href="#" class="btn btn-secondary">Get Started</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> Linbey. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,224 @@
+/*
+  Global stylesheet for the Linbey website.
+
+  The design takes cues from the clean, spacious layouts of Apple.com: large
+  typography, generous margins and simple colour palettes. Light and dark
+  sections alternate to create contrast and rhythm. A fixed navigation bar
+  becomes subtly opaque as the user scrolls, and all elements animate
+  gracefully into view using CSS transitions triggered by JavaScript.
+*/
+
+/* Reset box sizing and remove default spacing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  line-height: 1.5;
+  color: #111;
+  background-color: #fff;
+  scroll-behavior: smooth;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Navigation bar */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  z-index: 1000;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.navbar.scrolled {
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar .brand {
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+.navbar nav ul {
+  list-style: none;
+  display: flex;
+  gap: 1.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar nav a {
+  font-size: 1rem;
+  padding: 0.5rem;
+  transition: color 0.2s ease;
+}
+
+.navbar nav a:hover {
+  color: #0070c9;
+}
+
+/* Hero section */
+.hero {
+  height: 100vh;
+  background-image: url("https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1600&q=80");
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  text-align: center;
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 90%;
+  padding: 0 1rem;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.hero p {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 0.8rem 2rem;
+  border-radius: 30px;
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary {
+  background-color: #0070c9;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #005fa3;
+}
+
+.btn-secondary {
+  background-color: #fff;
+  color: #0070c9;
+  border: 2px solid #0070c9;
+}
+
+.btn-secondary:hover {
+  background-color: #0070c9;
+  color: #fff;
+}
+
+/* Feature sections */
+.feature {
+  padding: 5rem 0;
+}
+
+.feature.light {
+  background-color: #f6f6f6;
+  color: #111;
+}
+
+.feature.dark {
+  background-color: #111;
+  color: #f6f6f6;
+}
+
+.feature .container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .feature .container {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.feature .image img {
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  display: block;
+}
+
+/* Hidden and show classes for scroll animations */
+.hidden {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Call to Action */
+.cta {
+  padding: 5rem 1rem;
+  text-align: center;
+  background-color: #0070c9;
+  color: #fff;
+}
+
+.cta h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.cta p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  opacity: 0.9;
+}
+
+/* Footer */
+.footer {
+  padding: 2rem;
+  text-align: center;
+  background-color: #f2f2f2;
+  font-size: 0.875rem;
+  color: #555;
+}
