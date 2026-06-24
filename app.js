@@ -54,6 +54,8 @@ const state = {
   uploads: [],
 };
 
+let motionBound = false;
+
 const dbName = "personal-knowledge-base";
 const storeName = "pending-files";
 
@@ -287,8 +289,8 @@ function renderLibrary() {
 
   listEl.innerHTML = list
     .map(
-      (doc) => `
-        <article class="doc-card ${state.selectedId === doc.id ? "active" : ""}" data-doc-id="${doc.id}">
+      (doc, index) => `
+        <article class="doc-card ${state.selectedId === doc.id ? "active" : ""}" data-doc-id="${doc.id}" style="--card-index: ${index}">
           <div class="doc-meta">
             <span class="type-pill">${doc.type}</span>
             <span>${doc.updated}</span>
@@ -405,6 +407,99 @@ function refreshIcons() {
   });
 }
 
+function bindMotion() {
+  if (motionBound) return;
+  motionBound = true;
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  if (reduceMotion.matches) return;
+
+  const root = document.documentElement;
+  const target = {
+    x: 0.5,
+    y: 0.5,
+    px: window.innerWidth / 2,
+    py: window.innerHeight / 2,
+  };
+  const current = { ...target };
+
+  const setMotionVars = () => {
+    current.x += (target.x - current.x) * 0.12;
+    current.y += (target.y - current.y) * 0.12;
+    current.px += (target.px - current.px) * 0.16;
+    current.py += (target.py - current.py) * 0.16;
+
+    const dx = current.x - 0.5;
+    const dy = current.y - 0.5;
+    const motionX = dx * 52;
+    const motionY = dy * 42;
+    const motionXSmall = dx * 22;
+    const motionYSmall = dy * 16;
+    const microX = dx * 8;
+    const microY = dy * 6;
+
+    root.style.setProperty("--mx", current.x.toFixed(4));
+    root.style.setProperty("--my", current.y.toFixed(4));
+    root.style.setProperty("--px", `${current.px.toFixed(1)}px`);
+    root.style.setProperty("--py", `${current.py.toFixed(1)}px`);
+    root.style.setProperty("--rx", `${(window.innerWidth - current.px).toFixed(1)}px`);
+    root.style.setProperty("--motion-x", `${motionX.toFixed(1)}px`);
+    root.style.setProperty("--motion-y", `${motionY.toFixed(1)}px`);
+    root.style.setProperty("--motion-x-neg", `${(-motionX).toFixed(1)}px`);
+    root.style.setProperty("--motion-y-neg", `${(-motionY).toFixed(1)}px`);
+    root.style.setProperty("--motion-x-sm", `${motionXSmall.toFixed(1)}px`);
+    root.style.setProperty("--motion-y-sm", `${motionYSmall.toFixed(1)}px`);
+    root.style.setProperty("--motion-x-sm-neg", `${(-motionXSmall).toFixed(1)}px`);
+    root.style.setProperty("--motion-y-sm-neg", `${(-motionYSmall).toFixed(1)}px`);
+    root.style.setProperty("--micro-x", `${microX.toFixed(1)}px`);
+    root.style.setProperty("--micro-y", `${microY.toFixed(1)}px`);
+    root.style.setProperty("--tilt-x", `${(dx * 8).toFixed(2)}deg`);
+    root.style.setProperty("--tilt-y", `${(dy * 8).toFixed(2)}deg`);
+    root.style.setProperty("--scroll", `${window.scrollY}`);
+    root.style.setProperty("--scroll-rot", `${(window.scrollY * 0.006).toFixed(2)}deg`);
+
+    requestAnimationFrame(setMotionVars);
+  };
+
+  window.addEventListener(
+    "pointermove",
+    (event) => {
+      target.px = event.clientX;
+      target.py = event.clientY;
+      target.x = Math.min(1, Math.max(0, event.clientX / window.innerWidth));
+      target.y = Math.min(1, Math.max(0, event.clientY / window.innerHeight));
+
+      const activeCard = event.target.closest(".stat-card, .panel, .doc-card, .upload-zone");
+      if (activeCard) {
+        const rect = activeCard.getBoundingClientRect();
+        activeCard.style.setProperty("--card-x", `${(((event.clientX - rect.left) / rect.width) * 100).toFixed(1)}%`);
+        activeCard.style.setProperty("--card-y", `${(((event.clientY - rect.top) / rect.height) * 100).toFixed(1)}%`);
+      }
+    },
+    { passive: true },
+  );
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      root.style.setProperty("--scroll", `${window.scrollY}`);
+      root.style.setProperty("--scroll-rot", `${(window.scrollY * 0.006).toFixed(2)}deg`);
+    },
+    { passive: true },
+  );
+
+  window.addEventListener(
+    "resize",
+    () => {
+      target.px = window.innerWidth * target.x;
+      target.py = window.innerHeight * target.y;
+    },
+    { passive: true },
+  );
+
+  requestAnimationFrame(setMotionVars);
+}
+
 function exportIndex() {
   const payload = {
     exportedAt: new Date().toISOString(),
@@ -509,6 +604,7 @@ function bindEvents() {
 }
 
 async function init() {
+  bindMotion();
   bindEvents();
   state.uploads = await loadUploads();
   setViewFromHash();

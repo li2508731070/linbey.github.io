@@ -11,6 +11,19 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
+    <div class="ambient-backdrop" aria-hidden="true">
+      <div class="ambient-cursor"></div>
+      <div class="ambient-grid"></div>
+      <div class="ambient-aurora"></div>
+      <div class="floating-docs">
+        <span style="--i: 0; --x: 8%; --y: 14%; --r: -10deg; --d: 18s"></span>
+        <span style="--i: 1; --x: 68%; --y: 9%; --r: 8deg; --d: 23s"></span>
+        <span style="--i: 2; --x: 86%; --y: 34%; --r: -5deg; --d: 21s"></span>
+        <span style="--i: 3; --x: 18%; --y: 72%; --r: 12deg; --d: 26s"></span>
+        <span style="--i: 4; --x: 78%; --y: 82%; --r: -14deg; --d: 20s"></span>
+        <span style="--i: 5; --x: 42%; --y: 50%; --r: 4deg; --d: 28s"></span>
+      </div>
+    </div>
     <div class="app-shell">
       <aside class="sidebar" aria-label="知识库导航">
         <a class="brand" href="#overview" aria-label="个人知识库首页">
@@ -58,6 +71,12 @@
               alt="实验文档和知识归档空间"
             />
             <div class="hero-overlay"></div>
+            <div class="hero-motion" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
             <div class="hero-content">
               <span class="eyebrow">Personal Knowledge Vault</span>
               <h1>把实验记录、资料和想法收进一个可检索的空间。</h1>
