@@ -1,111 +1,219 @@
-<!DOCTYPE html>
-<html lang="zh">
+<!doctype html>
+<html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Linbey – 动态体验</title>
-    <!--
-      This site is inspired by the minimal, dynamic feel of Apple’s product
-      pages. It uses a full‑screen hero section with a parallax effect,
-      alternating light and dark feature sections, and smooth scroll‑triggered
-      animations. All of the styles live in ``style.css`` and the
-      interactive behaviour resides in ``script.js``.  You can adjust the
-      image URLs below to better match the products or themes you want to
-      showcase.  When publishing with GitHub Pages make sure these files live
-      in the root of the repository and that your CNAME continues to point
-      at the desired domain.
-    -->
-    <link rel="stylesheet" href="style.css" />
+    <title>个人知识库</title>
+    <meta
+      name="description"
+      content="个人实验文档、资料归档、检索与临时上传暂存空间。"
+    />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <header class="navbar">
-      <div class="brand">Linbey</div>
-      <nav>
-        <ul>
-          <li><a href="#hero">首页</a></li>
-          <li><a href="#features">功能</a></li>
-          <li><a href="#cta">加入</a></li>
-        </ul>
-      </nav>
-    </header>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="知识库导航">
+        <a class="brand" href="#overview" aria-label="个人知识库首页">
+          <span class="brand-mark">K</span>
+          <span>
+            <strong>个人知识库</strong>
+            <small>Lab Archive</small>
+          </span>
+        </a>
 
-    <!-- Hero Section -->
-    <section id="hero" class="hero">
-      <div class="hero-content">
-        <h1>朱绍宇撸管专用链接</h1>
-        <p>设计灵感源自苹果</p>
-        <a href="#features" class="btn btn-primary">探索更多</a>
-      </div>
-    </section>
+        <nav class="nav-list">
+          <a class="nav-item active" href="#overview" data-view-link="overview">
+            <i data-lucide="layout-dashboard"></i>
+            <span>总览</span>
+          </a>
+          <a class="nav-item" href="#library" data-view-link="library">
+            <i data-lucide="library"></i>
+            <span>资料库</span>
+          </a>
+          <a class="nav-item" href="#uploads" data-view-link="uploads">
+            <i data-lucide="upload-cloud"></i>
+            <span>临时上传</span>
+          </a>
+          <a class="nav-item" href="#settings" data-view-link="settings">
+            <i data-lucide="settings-2"></i>
+            <span>接入配置</span>
+          </a>
+        </nav>
 
-    <!-- Feature Sections -->
-    <main id="features">
-      <section class="feature light">
-        <div class="container">
-          <div class="text hidden">
-            <h2>流畅性能</h2>
-            <p>
-              采用现代 Web 技术构建，此模板在每种设备上都能提供快速响应。
-              流畅的动画和直观的布局让访客从首次滚动开始便沉浸其中。
-            </p>
-          </div>
-          <div class="image hidden">
-            <img
-              src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80"
-              alt="高科技设备"
-            />
+        <div class="sidebar-card">
+          <span class="status-dot"></span>
+          <div>
+            <strong>GitHub Pages Ready</strong>
+            <small>静态部署 / API 预留</small>
           </div>
         </div>
-      </section>
+      </aside>
 
-      <section class="feature dark">
-        <div class="container">
-          <div class="image hidden">
+      <main class="main">
+        <section id="overview" class="view active" data-view="overview">
+          <header class="hero">
             <img
-              src="https://images.unsplash.com/photo-1523475496153-3d6ccfd7ed5a?auto=format&fit=crop&w=800&q=80"
-              alt="优雅的电脑"
+              class="hero-image"
+              src="./assets/knowledge-hero.png"
+              alt="实验文档和知识归档空间"
             />
-          </div>
-          <div class="text hidden">
-            <h2>优雅设计</h2>
-            <p>
-              简洁的美学让人联想到标志性的产品。大尺寸的排版和宽敞的留白突出您的内容，为网站赋予高级质感。
-            </p>
-          </div>
-        </div>
-      </section>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+              <span class="eyebrow">Personal Knowledge Vault</span>
+              <h1>把实验记录、资料和想法收进一个可检索的空间。</h1>
+              <div class="hero-actions">
+                <a class="button primary" href="#library">
+                  <i data-lucide="search"></i>
+                  <span>进入资料库</span>
+                </a>
+                <a class="button secondary" href="#uploads">
+                  <i data-lucide="file-up"></i>
+                  <span>上传资料</span>
+                </a>
+              </div>
+            </div>
+          </header>
 
-      <section class="feature light">
-        <div class="container">
-          <div class="text hidden">
-            <h2>响应式与可访问</h2>
-            <p>
-              此布局可优雅适配任何屏幕尺寸，并通过语义化 HTML 提升可访问性。
-              导航链接采用平滑滚动，提供更精致的浏览体验。
-            </p>
+          <section class="stats-grid" aria-label="知识库状态">
+            <article class="stat-card">
+              <i data-lucide="files"></i>
+              <span>文档</span>
+              <strong id="stat-docs">0</strong>
+            </article>
+            <article class="stat-card">
+              <i data-lucide="tags"></i>
+              <span>标签</span>
+              <strong id="stat-tags">0</strong>
+            </article>
+            <article class="stat-card">
+              <i data-lucide="archive"></i>
+              <span>暂存</span>
+              <strong id="stat-uploads">0</strong>
+            </article>
+            <article class="stat-card">
+              <i data-lucide="hard-drive-download"></i>
+              <span>容量</span>
+              <strong id="stat-size">0 MB</strong>
+            </article>
+          </section>
+
+          <section class="split">
+            <div class="panel">
+              <div class="section-head">
+                <h2>最近资料</h2>
+                <a class="icon-link" href="#library" aria-label="查看全部">
+                  <i data-lucide="arrow-right"></i>
+                </a>
+              </div>
+              <div id="recent-list" class="compact-list"></div>
+            </div>
+            <div class="panel">
+              <div class="section-head">
+                <h2>标签分布</h2>
+                <button class="icon-button" id="shuffle-tags" aria-label="切换标签">
+                  <i data-lucide="refresh-cw"></i>
+                </button>
+              </div>
+              <div id="tag-cloud" class="tag-cloud"></div>
+            </div>
+          </section>
+        </section>
+
+        <section id="library" class="view" data-view="library">
+          <div class="topbar">
+            <div>
+              <span class="eyebrow">Library</span>
+              <h1>资料库</h1>
+            </div>
+            <button class="button secondary" id="export-index">
+              <i data-lucide="download"></i>
+              <span>导出索引</span>
+            </button>
           </div>
-          <div class="image hidden">
-            <img
-              src="https://images.unsplash.com/photo-1503389152955-9e65c2a9414d?auto=format&fit=crop&w=800&q=80"
-              alt="移动设备"
-            />
+
+          <section class="toolbar" aria-label="资料筛选">
+            <label class="search-box">
+              <i data-lucide="search"></i>
+              <input id="search-input" type="search" placeholder="搜索标题、标签、摘要" />
+            </label>
+            <div class="segmented" id="type-filter" aria-label="类型筛选"></div>
+            <select id="sort-select" aria-label="排序方式">
+              <option value="recent">最近更新</option>
+              <option value="title">标题</option>
+              <option value="size">文件大小</option>
+            </select>
+          </section>
+
+          <div class="library-layout">
+            <section class="doc-list" id="doc-list" aria-label="文档列表"></section>
+            <aside class="detail-panel" id="detail-panel" aria-label="文档详情"></aside>
           </div>
-        </div>
-      </section>
-    </main>
+        </section>
 
-    <!-- Call to Action -->
-    <section id="cta" class="cta hidden">
-      <h2>加入这场革命</h2>
-      <p>成为推动未来网页体验创新的一份子。</p>
-      <a href="#" class="btn btn-secondary">立即开始</a>
-    </section>
+        <section id="uploads" class="view" data-view="uploads">
+          <div class="topbar">
+            <div>
+              <span class="eyebrow">Inbox</span>
+              <h1>临时上传</h1>
+            </div>
+            <button class="button danger" id="clear-uploads">
+              <i data-lucide="trash-2"></i>
+              <span>清空暂存</span>
+            </button>
+          </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <p>&copy; <span id="year"></span> Linbey. 保留所有权利。</p>
-    </footer>
+          <section class="upload-zone" id="upload-zone">
+            <input id="file-input" type="file" multiple hidden />
+            <i data-lucide="cloud-upload"></i>
+            <h2>文件暂存区</h2>
+            <button class="button primary" id="pick-files">
+              <i data-lucide="folder-open"></i>
+              <span>选择文件</span>
+            </button>
+          </section>
 
-    <script src="script.js"></script>
+          <section class="panel">
+            <div class="section-head">
+              <h2>待整理资料</h2>
+              <span class="muted" id="upload-count">0 个文件</span>
+            </div>
+            <div class="upload-list" id="upload-list"></div>
+          </section>
+        </section>
+
+        <section id="settings" class="view" data-view="settings">
+          <div class="topbar">
+            <div>
+              <span class="eyebrow">Integration</span>
+              <h1>接入配置</h1>
+            </div>
+          </div>
+
+          <div class="settings-grid">
+            <article class="panel integration-card">
+              <i data-lucide="github"></i>
+              <h2>GitHub API</h2>
+              <p>适合小型文档和 Markdown 资料，上传后可以生成一次仓库提交。</p>
+              <code>POST /api/github-upload</code>
+            </article>
+            <article class="panel integration-card">
+              <i data-lucide="database"></i>
+              <h2>对象存储</h2>
+              <p>适合 PDF、图片、数据包和大文件，页面保存索引，文件放入 R2 或 Supabase。</p>
+              <code>POST /api/storage-upload</code>
+            </article>
+            <article class="panel integration-card">
+              <i data-lucide="shield-check"></i>
+              <h2>访问控制</h2>
+              <p>私密实验资料建议接入 GitHub OAuth、Cloudflare Access 或 Supabase Auth。</p>
+              <code>GET /api/session</code>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script src="./app.js"></script>
   </body>
 </html>
