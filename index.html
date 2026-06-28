@@ -3,15 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>个人知识库</title>
+    <title>H3C Cyber Lab OS</title>
     <meta
       name="description"
-      content="个人实验文档、资料归档、检索与临时上传暂存空间。"
+      content="个人网络实验 OS：H3C 实验资料、协议拓扑、命令速查、训练复盘与移动端 PDF 查阅。"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260628-cockpit" />
+    <link rel="stylesheet" href="./styles.css?v=20260628-os" />
   </head>
   <body>
     <div class="ambient-backdrop" aria-hidden="true">
+      <canvas id="cyber-canvas"></canvas>
       <div class="ambient-cursor"></div>
       <div class="ambient-grid"></div>
       <div class="ambient-aurora"></div>
@@ -29,8 +30,8 @@
         <a class="brand" href="#overview" aria-label="个人知识库首页">
           <span class="brand-mark">K</span>
           <span>
-            <strong>个人知识库</strong>
-            <small>Lab Archive</small>
+            <strong>Cyber Lab OS</strong>
+            <small>Network Experiment System</small>
           </span>
         </a>
 
@@ -78,8 +79,8 @@
               <span></span>
             </div>
             <div class="hero-content">
-              <span class="eyebrow">H3C Lab Cockpit</span>
-              <h1>把网络实验、拓扑资料和复盘笔记接进一个动态控制台。</h1>
+              <span class="eyebrow">H3C Cyber Lab OS</span>
+              <h1>把网络实验、拓扑资料、命令和排错训练接进一个夜间控制台。</h1>
               <div class="hero-actions">
                 <a class="button primary" href="#library">
                   <i data-lucide="search"></i>
@@ -127,6 +128,45 @@
               <div class="topology-map" id="topology-map"></div>
               <div class="protocol-grid" id="topology-detail"></div>
             </div>
+          </section>
+
+          <section class="os-grid" aria-label="个人网络实验 OS">
+            <article class="panel route-panel">
+              <div class="section-head">
+                <div>
+                  <span class="eyebrow">Route</span>
+                  <h2>实验路线图</h2>
+                </div>
+              </div>
+              <div class="route-map" id="route-map"></div>
+            </article>
+            <article class="panel command-panel">
+              <div class="section-head">
+                <div>
+                  <span class="eyebrow">CLI</span>
+                  <h2>命令速查</h2>
+                </div>
+              </div>
+              <div class="command-console" id="command-console"></div>
+            </article>
+            <article class="panel daily-panel">
+              <div class="section-head">
+                <div>
+                  <span class="eyebrow">Drill</span>
+                  <h2>今日训练</h2>
+                </div>
+              </div>
+              <div class="daily-drill" id="daily-drill"></div>
+            </article>
+            <article class="panel fault-panel">
+              <div class="section-head">
+                <div>
+                  <span class="eyebrow">Troubleshoot</span>
+                  <h2>故障排错模拟</h2>
+                </div>
+              </div>
+              <div class="fault-sim" id="fault-sim"></div>
+            </article>
           </section>
 
           <section class="split">
@@ -249,6 +289,6 @@
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="./app.js?v=20260628-cockpit"></script>
+    <script src="./app.js?v=20260628-os"></script>
   </body>
 </html>

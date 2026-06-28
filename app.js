@@ -238,6 +238,72 @@ const protocolNodes = [
   { id: "h3cne", label: "H3CNE", query: "H3CNE", terms: ["H3CNE", "综合实验"] },
 ];
 
+const learningPath = [
+  { title: "VLAN 边界", query: "VLAN", docs: ["vlan-routing-lab", "private-vlan-lab"] },
+  { title: "链路冗余", query: "链路聚合", docs: ["link-aggregation-lab", "smart-link-lab", "rrpp-lab"] },
+  { title: "二层收敛", query: "MSTP", docs: ["mstp-lab", "mvrp-lab"] },
+  { title: "高可用", query: "VRRP", docs: ["vrrp-lab", "irf-mad-lab", "bfd-lab"] },
+  { title: "运营商封装", query: "QinQ", docs: ["basic-qinq-lab", "flexible-qinq-lab"] },
+  { title: "广域隧道", query: "VPN", docs: ["gre-vpn-lab", "ipsec-vpn-lab", "ipsec-vpn-main-mode-lab"] },
+  { title: "流量治理", query: "QOS", docs: ["qos-lab"] },
+  { title: "综合验收", query: "H3CNE", docs: ["h3cne-comprehensive-lab"] },
+];
+
+const commandIndex = [
+  { command: "display ip routing-table", protocol: "路由", query: "VLAN路由", doc: "vlan-routing-lab" },
+  { command: "display ospf peer", protocol: "OSPF", query: "OSPF", doc: "h3cne-comprehensive-lab" },
+  { command: "display vlan", protocol: "VLAN", query: "VLAN", doc: "vlan-routing-lab" },
+  { command: "display link-aggregation verbose", protocol: "链路聚合", query: "链路聚合", doc: "link-aggregation-lab" },
+  { command: "display stp brief", protocol: "MSTP", query: "MSTP", doc: "mstp-lab" },
+  { command: "display vrrp", protocol: "VRRP", query: "VRRP", doc: "vrrp-lab" },
+  { command: "display ike sa", protocol: "IPSec", query: "IPSec", doc: "ipsec-vpn-lab" },
+  { command: "display qos policy", protocol: "QOS", query: "QOS", doc: "qos-lab" },
+];
+
+const drillPrompts = [
+  { query: "VPN", title: "复盘 VPN 建立失败", prompt: "写下 IKE SA、ACL 感兴趣流、路由回程三个排查点。" },
+  { query: "MSTP", title: "复盘二层环路收敛", prompt: "说明根桥、端口角色和阻塞端口如何验证。" },
+  { query: "VRRP", title: "复盘网关高可用", prompt: "记录主备切换条件、优先级和上联故障联动。" },
+  { query: "QOS", title: "复盘流量治理", prompt: "列出分类、行为、策略应用方向和验证命令。" },
+  { query: "QinQ", title: "复盘 QinQ 封装", prompt: "区分基本 QinQ 与灵活 QinQ 的标签处理逻辑。" },
+];
+
+const faultScenarios = [
+  {
+    title: "IPSec VPN 隧道不起来",
+    symptom: "两端公网可达，但业务网段互访失败，IKE SA 没有建立。",
+    choices: [
+      { label: "先看 display ike sa", good: true },
+      { label: "直接重启设备", good: false },
+      { label: "只检查终端网关", good: false },
+    ],
+    answer: "优先确认 IKE SA 和提议匹配，再查 ACL 感兴趣流、路由回程和安全策略。",
+    query: "IPSec",
+  },
+  {
+    title: "VRRP 主备频繁切换",
+    symptom: "业务偶发中断，网关 MAC 变化，主备状态来回漂移。",
+    choices: [
+      { label: "检查 track/BFD 和优先级", good: true },
+      { label: "只改终端 DNS", good: false },
+      { label: "关闭全部备份链路", good: false },
+    ],
+    answer: "先看 VRRP 状态、优先级抢占、track/BFD 联动，再看上联链路稳定性。",
+    query: "VRRP",
+  },
+  {
+    title: "MSTP 环路导致广播风暴",
+    symptom: "核心 CPU 升高，MAC 表震荡，部分 VLAN 丢包。",
+    choices: [
+      { label: "确认根桥和端口角色", good: true },
+      { label: "随机拔线", good: false },
+      { label: "只清 ARP", good: false },
+    ],
+    answer: "定位根桥、区域配置、端口角色和边缘端口，结合 display stp brief 验证。",
+    query: "MSTP",
+  },
+];
+
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 
@@ -285,7 +351,7 @@ function showToast(message) {
 
 async function loadDocuments() {
   try {
-    const response = await fetch("./docs/documents.json?v=20260628-cockpit", { cache: "no-cache" });
+    const response = await fetch("./docs/documents.json?v=20260628-os", { cache: "no-cache" });
     if (!response.ok) throw new Error(`documents.json ${response.status}`);
     const items = await response.json();
     return Array.isArray(items) ? items : fallbackDocs;
@@ -315,6 +381,20 @@ function getStatus(id) {
 
 function getStatusLabel(id) {
   return statusOptions.find((item) => item.id === id)?.label || statusOptions[0].label;
+}
+
+function findDoc(id) {
+  return docs.find((doc) => doc.id === id);
+}
+
+function runQuery(query, selectedId = "") {
+  state.query = query;
+  state.type = "全部";
+  if (selectedId) state.selectedId = selectedId;
+  $("#search-input").value = state.query;
+  state.view = "library";
+  location.hash = "library";
+  renderAll();
 }
 
 function setStatus(id, status) {
@@ -562,6 +642,101 @@ function renderTopology() {
     .join("");
 }
 
+function renderRouteMap() {
+  const routeMap = $("#route-map");
+  if (!routeMap) return;
+
+  routeMap.innerHTML = learningPath
+    .map((step, index) => {
+      const total = step.docs.length;
+      const done = step.docs.filter((id) => ["reproduced", "mastered"].includes(getStatus(id))).length;
+      return `
+        <button class="route-step" data-route-query="${step.query}" type="button" style="--step-index: ${index}">
+          <span class="route-index">${String(index + 1).padStart(2, "0")}</span>
+          <strong>${step.title}</strong>
+          <small>${done}/${total} 掌握</small>
+        </button>
+      `;
+    })
+    .join("");
+}
+
+function renderCommandConsole() {
+  const consoleEl = $("#command-console");
+  if (!consoleEl) return;
+
+  consoleEl.innerHTML = `
+    <div class="terminal-head">
+      <span></span><span></span><span></span>
+      <strong>lab-cli</strong>
+    </div>
+    ${commandIndex
+      .map(
+        (item) => `
+          <button class="command-line" data-command-query="${item.query}" data-command-doc="${item.doc}" type="button">
+            <code>${item.command}</code>
+            <span>${item.protocol}</span>
+          </button>
+        `,
+      )
+      .join("")}
+  `;
+}
+
+function getTodayDrill() {
+  const day = Math.floor(Date.now() / 86400000);
+  return drillPrompts[day % drillPrompts.length];
+}
+
+function renderDailyDrill() {
+  const drillEl = $("#daily-drill");
+  if (!drillEl) return;
+
+  const drill = getTodayDrill();
+  const matches = docs.filter((doc) => docHaystack(doc).includes(drill.query.toLowerCase()));
+  const target = matches[0] || docs[0];
+
+  drillEl.innerHTML = `
+    <span class="type-pill">${drill.query}</span>
+    <h3>${drill.title}</h3>
+    <p>${drill.prompt}</p>
+    <div class="drill-actions">
+      <button class="button primary" data-drill-open="${drill.query}" data-drill-doc="${target?.id || ""}" type="button">
+        <i data-lucide="search"></i>
+        <span>进入训练</span>
+      </button>
+      <button class="button secondary" data-drill-complete="${target?.id || ""}" type="button">
+        <i data-lucide="shield-check"></i>
+        <span>标记复盘</span>
+      </button>
+    </div>
+  `;
+}
+
+function renderFaultSim() {
+  const faultEl = $("#fault-sim");
+  if (!faultEl) return;
+
+  const scenario = faultScenarios[new Date().getDate() % faultScenarios.length];
+  faultEl.innerHTML = `
+    <span class="type-pill">${scenario.query}</span>
+    <h3>${scenario.title}</h3>
+    <p>${scenario.symptom}</p>
+    <div class="fault-choices">
+      ${scenario.choices
+        .map(
+          (choice, index) => `
+            <button data-fault-choice="${index}" data-fault-good="${choice.good}" data-fault-query="${scenario.query}" data-fault-answer="${scenario.answer}" type="button">
+              ${choice.label}
+            </button>
+          `,
+        )
+        .join("")}
+    </div>
+    <div class="fault-answer" id="fault-answer"></div>
+  `;
+}
+
 function renderTypeFilter() {
   $("#type-filter").innerHTML = getTypes()
     .map(
@@ -717,6 +892,8 @@ function renderNavigation() {
   $$("[data-view]").forEach((view) => {
     view.classList.toggle("active", view.dataset.view === state.view);
   });
+  document.body.dataset.view = state.view;
+  document.body.classList.toggle("reading-mode", state.view === "library");
 }
 
 function renderAll() {
@@ -725,6 +902,10 @@ function renderAll() {
   renderRecent();
   renderTagCloud();
   renderTopology();
+  renderRouteMap();
+  renderCommandConsole();
+  renderDailyDrill();
+  renderFaultSim();
   renderLibrary();
   renderUploads();
   refreshIcons();
@@ -749,6 +930,108 @@ function refreshIcons() {
     svg.innerHTML = fallbackIcons[name] || fallbackIcons.files;
     icon.replaceWith(svg);
   });
+}
+
+function bindCyberCanvas() {
+  const canvas = $("#cyber-canvas");
+  if (!canvas || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  const context = canvas.getContext("2d");
+  const pointer = { x: 0.5, y: 0.5 };
+  let width = 0;
+  let height = 0;
+  let particles = [];
+
+  const resize = () => {
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = Math.floor(width * ratio);
+    canvas.height = Math.floor(height * ratio);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    const count = Math.max(42, Math.min(92, Math.floor((width * height) / 17000)));
+    particles = Array.from({ length: count }, (_, index) => ({
+      x: (index * 97) % width,
+      y: (index * 53) % height,
+      vx: ((index % 7) - 3) * 0.05,
+      vy: (((index + 3) % 9) - 4) * 0.035,
+      pulse: Math.random() * Math.PI * 2,
+    }));
+  };
+
+  const draw = (time) => {
+    context.clearRect(0, 0, width, height);
+    context.globalCompositeOperation = "source-over";
+    context.fillStyle = "rgba(8, 12, 11, 0.2)";
+    context.fillRect(0, 0, width, height);
+
+    const intensity = document.body.classList.contains("reading-mode") ? 0.35 : 1;
+    const px = pointer.x * width;
+    const py = pointer.y * height;
+
+    particles.forEach((point, index) => {
+      point.x += point.vx + (px - width / 2) * 0.00002;
+      point.y += point.vy + (py - height / 2) * 0.000015;
+
+      if (point.x < -30) point.x = width + 30;
+      if (point.x > width + 30) point.x = -30;
+      if (point.y < -30) point.y = height + 30;
+      if (point.y > height + 30) point.y = -30;
+
+      for (let j = index + 1; j < particles.length; j += 1) {
+        const other = particles[j];
+        const dx = point.x - other.x;
+        const dy = point.y - other.y;
+        const distance = Math.hypot(dx, dy);
+        if (distance < 145) {
+          const alpha = (1 - distance / 145) * 0.16 * intensity;
+          context.strokeStyle = `rgba(73, 198, 177, ${alpha})`;
+          context.lineWidth = 1;
+          context.beginPath();
+          context.moveTo(point.x, point.y);
+          context.lineTo(other.x, other.y);
+          context.stroke();
+        }
+      }
+
+      const glow = 0.35 + Math.sin(time * 0.002 + point.pulse) * 0.22;
+      context.fillStyle = `rgba(233, 220, 193, ${glow * 0.42 * intensity})`;
+      context.beginPath();
+      context.arc(point.x, point.y, index % 5 === 0 ? 2.1 : 1.35, 0, Math.PI * 2);
+      context.fill();
+    });
+
+    const scanY = ((time * 0.045) % (height + 240)) - 120;
+    const gradient = context.createLinearGradient(0, scanY - 80, width, scanY + 80);
+    gradient.addColorStop(0, "rgba(73, 198, 177, 0)");
+    gradient.addColorStop(0.5, `rgba(73, 198, 177, ${0.13 * intensity})`);
+    gradient.addColorStop(1, "rgba(215, 171, 95, 0)");
+    context.fillStyle = gradient;
+    context.fillRect(0, scanY - 55, width, 110);
+
+    const radial = context.createRadialGradient(px, py, 0, px, py, Math.max(width, height) * 0.48);
+    radial.addColorStop(0, `rgba(73, 198, 177, ${0.16 * intensity})`);
+    radial.addColorStop(1, "rgba(73, 198, 177, 0)");
+    context.fillStyle = radial;
+    context.fillRect(0, 0, width, height);
+
+    requestAnimationFrame(draw);
+  };
+
+  window.addEventListener("resize", resize, { passive: true });
+  window.addEventListener(
+    "pointermove",
+    (event) => {
+      pointer.x = Math.min(1, Math.max(0, event.clientX / window.innerWidth));
+      pointer.y = Math.min(1, Math.max(0, event.clientY / window.innerHeight));
+    },
+    { passive: true },
+  );
+
+  resize();
+  requestAnimationFrame(draw);
 }
 
 function bindMotion() {
@@ -903,6 +1186,11 @@ function bindEvents() {
     const recent = event.target.closest("[data-select-doc]");
     const tag = event.target.closest("[data-tag]");
     const protocol = event.target.closest("[data-protocol]");
+    const route = event.target.closest("[data-route-query]");
+    const command = event.target.closest("[data-command-query]");
+    const drillOpen = event.target.closest("[data-drill-open]");
+    const drillComplete = event.target.closest("[data-drill-complete]");
+    const faultChoice = event.target.closest("[data-fault-choice]");
     const statusButton = event.target.closest("[data-status][data-status-doc]");
     const downloadButton = event.target.closest("[data-download-upload]");
     const deleteButton = event.target.closest("[data-delete-upload]");
@@ -920,20 +1208,46 @@ function bindEvents() {
     }
 
     if (tag) {
-      state.query = tag.dataset.tag;
-      $("#search-input").value = state.query;
-      state.view = "library";
-      location.hash = "library";
-      renderAll();
+      runQuery(tag.dataset.tag);
     }
 
     if (protocol) {
-      state.query = protocol.dataset.protocol;
-      $("#search-input").value = state.query;
-      state.type = "全部";
-      state.view = "library";
-      location.hash = "library";
-      renderAll();
+      runQuery(protocol.dataset.protocol);
+    }
+
+    if (route) {
+      runQuery(route.dataset.routeQuery);
+    }
+
+    if (command) {
+      runQuery(command.dataset.commandQuery, command.dataset.commandDoc);
+    }
+
+    if (drillOpen) {
+      runQuery(drillOpen.dataset.drillOpen, drillOpen.dataset.drillDoc);
+    }
+
+    if (drillComplete) {
+      const targetId = drillComplete.dataset.drillComplete;
+      if (targetId) {
+        setStatus(targetId, "review");
+        renderAll();
+        showToast("今日训练已标记为重点复盘");
+      }
+    }
+
+    if (faultChoice) {
+      const answer = $("#fault-answer");
+      const good = faultChoice.dataset.faultGood === "true";
+      answer.innerHTML = `
+        <strong>${good ? "排查方向正确" : "这个动作太粗了"}</strong>
+        <span>${faultChoice.dataset.faultAnswer}</span>
+        <button class="button secondary" data-protocol="${faultChoice.dataset.faultQuery}" type="button">
+          <i data-lucide="search"></i>
+          <span>查看相关实验</span>
+        </button>
+      `;
+      refreshIcons();
     }
 
     if (statusButton) {
@@ -982,6 +1296,7 @@ function bindEvents() {
 
 async function init() {
   bindMotion();
+  bindCyberCanvas();
   docs = await loadDocuments();
   state.selectedId = docs[0]?.id || "";
   state.statuses = readLocalMap(statusStorageKey);
