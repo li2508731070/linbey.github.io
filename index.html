@@ -8,7 +8,7 @@
       name="description"
       content="个人网络实验 OS：H3C 实验资料、协议拓扑、命令速查、训练复盘与移动端 PDF 查阅。"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260628-os" />
+    <link rel="stylesheet" href="./styles.css?v=20260628-persona" />
   </head>
   <body>
     <div class="ambient-backdrop" aria-hidden="true">
@@ -52,6 +52,10 @@
             <i data-lucide="settings-2"></i>
             <span>接入配置</span>
           </a>
+          <button class="nav-item nav-command" id="open-palette" type="button">
+            <i data-lucide="search"></i>
+            <span>命令面板</span>
+          </button>
         </nav>
 
         <div class="sidebar-card">
@@ -81,6 +85,11 @@
             <div class="hero-content">
               <span class="eyebrow">H3C Cyber Lab OS</span>
               <h1>把网络实验、拓扑资料、命令和排错训练接进一个夜间控制台。</h1>
+              <div class="identity-strip" aria-label="系统身份">
+                <span>LINBEY//NET-OS</span>
+                <span id="os-clock">--:--</span>
+                <span>BUILD 6F57755</span>
+              </div>
               <div class="hero-actions">
                 <a class="button primary" href="#library">
                   <i data-lucide="search"></i>
@@ -166,6 +175,15 @@
                 </div>
               </div>
               <div class="fault-sim" id="fault-sim"></div>
+            </article>
+            <article class="panel activity-panel">
+              <div class="section-head">
+                <div>
+                  <span class="eyebrow">Trace</span>
+                  <h2>实验轨迹</h2>
+                </div>
+              </div>
+              <div class="activity-board" id="activity-board"></div>
             </article>
           </section>
 
@@ -289,6 +307,19 @@
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="./app.js?v=20260628-os"></script>
+    <div class="palette" id="command-palette" aria-hidden="true">
+      <div class="palette-panel">
+        <div class="terminal-head">
+          <span></span><span></span><span></span>
+          <strong>command-center</strong>
+        </div>
+        <label class="palette-search">
+          <i data-lucide="search"></i>
+          <input id="palette-input" type="search" placeholder="输入协议、实验、命令" />
+        </label>
+        <div class="palette-results" id="palette-results"></div>
+      </div>
+    </div>
+    <script src="./app.js?v=20260628-persona"></script>
   </body>
 </html>

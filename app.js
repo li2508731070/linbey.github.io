@@ -210,6 +210,8 @@ const state = {
   uploads: [],
   statuses: {},
   notes: {},
+  activity: {},
+  paletteQuery: "",
 };
 
 let motionBound = false;
@@ -218,6 +220,7 @@ const dbName = "personal-knowledge-base";
 const storeName = "pending-files";
 const statusStorageKey = "personal-knowledge-status";
 const notesStorageKey = "personal-knowledge-notes";
+const activityStorageKey = "personal-knowledge-activity";
 
 const statusOptions = [
   { id: "unread", label: "未读" },
@@ -351,7 +354,7 @@ function showToast(message) {
 
 async function loadDocuments() {
   try {
-    const response = await fetch("./docs/documents.json?v=20260628-os", { cache: "no-cache" });
+    const response = await fetch("./docs/documents.json?v=20260628-persona", { cache: "no-cache" });
     if (!response.ok) throw new Error(`documents.json ${response.status}`);
     const items = await response.json();
     return Array.isArray(items) ? items : fallbackDocs;
@@ -394,12 +397,14 @@ function runQuery(query, selectedId = "") {
   $("#search-input").value = state.query;
   state.view = "library";
   location.hash = "library";
+  recordActivity("query");
   renderAll();
 }
 
 function setStatus(id, status) {
   state.statuses[id] = status;
   saveLocalMap(statusStorageKey, state.statuses);
+  recordActivity("status");
 }
 
 function getNote(id) {
@@ -409,6 +414,16 @@ function getNote(id) {
 function setNote(id, note) {
   state.notes[id] = note;
   saveLocalMap(notesStorageKey, state.notes);
+  recordActivity("note");
+}
+
+function recordActivity(kind) {
+  const date = new Date().toISOString().slice(0, 10);
+  const item = state.activity[date] || { count: 0, query: 0, status: 0, note: 0, open: 0 };
+  item.count += 1;
+  item[kind] = (item[kind] || 0) + 1;
+  state.activity[date] = item;
+  saveLocalMap(activityStorageKey, state.activity);
 }
 
 function openDb() {
@@ -517,6 +532,66 @@ function getTypes() {
 
 function docHaystack(doc) {
   return `${doc.title} ${doc.type} ${doc.tags.join(" ")} ${doc.summary} ${doc.owner}`.toLowerCase();
+}
+
+function getRelatedCommands(doc) {
+  const haystack = docHaystack(doc);
+  return commandIndex
+    .filter((command) => {
+      const protocol = command.protocol.toLowerCase();
+      const query = command.query.toLowerCase();
+      return doc.id === command.doc || haystack.includes(protocol) || haystack.includes(query);
+    })
+    .slice(0, 3);
+}
+
+function setProtocolTheme() {
+  const activeDoc = findDoc(state.selectedId);
+  const haystack = `${state.query} ${activeDoc ? docHaystack(activeDoc) : ""}`.toLowerCase();
+  const matched = protocolNodes.find((node) =>
+    node.terms.some((term) => haystack.includes(term.toLowerCase())),
+  );
+  document.body.dataset.protocolTheme = matched?.id || "core";
+}
+
+function updateClock() {
+  const clock = $("#os-clock");
+  if (!clock) return;
+  clock.textContent = new Date().toLocaleTimeString("zh-CN", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function getPaletteItems() {
+  return [
+    ...docs.map((doc) => ({
+      kind: "PDF",
+      title: doc.title,
+      meta: doc.type,
+      query: doc.title,
+      doc: doc.id,
+    })),
+    ...commandIndex.map((command) => ({
+      kind: "CMD",
+      title: command.command,
+      meta: command.protocol,
+      query: command.query,
+      doc: command.doc,
+    })),
+    ...protocolNodes.map((node) => ({
+      kind: "PROTO",
+      title: node.label,
+      meta: "protocol-node",
+      query: node.query,
+    })),
+    ...learningPath.map((step) => ({
+      kind: "ROUTE",
+      title: step.title,
+      meta: "learning-route",
+      query: step.query,
+    })),
+  ];
 }
 
 function filteredDocs() {
@@ -797,6 +872,7 @@ function renderDetail() {
   const isPdf = doc.file.toLowerCase().endsWith(".pdf");
   const status = getStatus(doc.id);
   const note = getNote(doc.id);
+  const relatedCommands = getRelatedCommands(doc);
   $("#detail-panel").innerHTML = `
     <span class="type-pill">${doc.type}</span>
     <h2>${doc.title}</h2>
@@ -837,6 +913,23 @@ function renderDetail() {
           </div>`
         : ""
     }
+    ${
+      relatedCommands.length
+        ? `<div class="related-commands">
+            <span>Related CLI</span>
+            ${relatedCommands
+              .map(
+                (command) => `
+                  <button class="related-command" data-command-query="${command.query}" data-command-doc="${command.doc}" type="button">
+                    <strong>${command.command}</strong>
+                    <small>${command.protocol}</small>
+                  </button>
+                `,
+              )
+              .join("")}
+          </div>`
+        : ""
+    }
     <label class="note-pad">
       <span>个人笔记</span>
       <textarea data-note="${doc.id}" rows="5" placeholder="关键命令、踩坑点、复盘结论">${note}</textarea>
@@ -853,6 +946,85 @@ function renderDetail() {
     </div>
   `;
   refreshIcons();
+}
+
+function renderActivityBoard() {
+  const board = $("#activity-board");
+  if (!board) return;
+
+  const days = Array.from({ length: 35 }, (_, index) => {
+    const day = new Date();
+    day.setDate(day.getDate() - 34 + index);
+    const key = day.toISOString().slice(0, 10);
+    const count = state.activity[key]?.count || 0;
+    return { key, count, level: Math.min(4, count) };
+  });
+  const today = new Date().toISOString().slice(0, 10);
+  const todayStats = state.activity[today] || {};
+  const noteCount = Object.values(state.notes).filter(Boolean).length;
+  const reviewCount = docs.filter((doc) => getStatus(doc.id) === "review").length;
+
+  board.innerHTML = `
+    <div class="trace-grid" aria-label="最近 35 天实验轨迹">
+      ${days
+        .map(
+          (day) => `
+            <span class="trace-cell level-${day.level}" title="${day.key} / ${day.count}"></span>
+          `,
+        )
+        .join("")}
+    </div>
+    <div class="trace-badges">
+      <span><strong>${todayStats.count || 0}</strong><small>today ops</small></span>
+      <span><strong>${noteCount}</strong><small>lab notes</small></span>
+      <span><strong>${reviewCount}</strong><small>review queue</small></span>
+    </div>
+  `;
+}
+
+function renderPaletteResults() {
+  const results = $("#palette-results");
+  if (!results) return;
+  const query = state.paletteQuery.trim().toLowerCase();
+  const items = getPaletteItems()
+    .filter((item) => {
+      const haystack = `${item.kind} ${item.title} ${item.meta} ${item.query}`.toLowerCase();
+      return !query || haystack.includes(query);
+    })
+    .slice(0, 8);
+
+  results.innerHTML = items.length
+    ? items
+        .map(
+          (item) => `
+            <button class="palette-item" data-palette-query="${item.query}" data-palette-doc="${item.doc || ""}" type="button">
+              <span>${item.kind}</span>
+              <strong>${item.title}</strong>
+              <small>${item.meta}</small>
+            </button>
+          `,
+        )
+        .join("")
+    : `<div class="empty">No command matched</div>`;
+}
+
+function openPalette(seed = "") {
+  const palette = $("#command-palette");
+  const input = $("#palette-input");
+  if (!palette || !input) return;
+  state.paletteQuery = seed;
+  input.value = seed;
+  palette.classList.add("open");
+  palette.setAttribute("aria-hidden", "false");
+  renderPaletteResults();
+  window.setTimeout(() => input.focus(), 40);
+}
+
+function closePalette() {
+  const palette = $("#command-palette");
+  if (!palette) return;
+  palette.classList.remove("open");
+  palette.setAttribute("aria-hidden", "true");
 }
 
 function renderUploads() {
@@ -894,6 +1066,7 @@ function renderNavigation() {
   });
   document.body.dataset.view = state.view;
   document.body.classList.toggle("reading-mode", state.view === "library");
+  setProtocolTheme();
 }
 
 function renderAll() {
@@ -906,8 +1079,10 @@ function renderAll() {
   renderCommandConsole();
   renderDailyDrill();
   renderFaultSim();
+  renderActivityBoard();
   renderLibrary();
   renderUploads();
+  renderPaletteResults();
   refreshIcons();
 }
 
@@ -1194,9 +1369,11 @@ function bindEvents() {
     const statusButton = event.target.closest("[data-status][data-status-doc]");
     const downloadButton = event.target.closest("[data-download-upload]");
     const deleteButton = event.target.closest("[data-delete-upload]");
+    const paletteItem = event.target.closest("[data-palette-query]");
 
     if (docCard) {
       state.selectedId = docCard.dataset.docId;
+      recordActivity("open");
       renderLibrary();
       refreshIcons();
     }
@@ -1205,6 +1382,7 @@ function bindEvents() {
       state.selectedId = recent.dataset.selectDoc;
       state.view = "library";
       location.hash = "library";
+      recordActivity("open");
     }
 
     if (tag) {
@@ -1263,9 +1441,30 @@ function bindEvents() {
     if (deleteButton) {
       deleteUpload(deleteButton.dataset.deleteUpload);
     }
+
+    if (paletteItem) {
+      runQuery(paletteItem.dataset.paletteQuery, paletteItem.dataset.paletteDoc);
+      closePalette();
+    }
   });
 
   $("#export-index").addEventListener("click", exportIndex);
+  $("#open-palette").addEventListener("click", () => openPalette());
+  $("#command-palette").addEventListener("click", (event) => {
+    if (event.target.id === "command-palette") closePalette();
+  });
+  $("#palette-input").addEventListener("input", (event) => {
+    state.paletteQuery = event.target.value;
+    renderPaletteResults();
+  });
+  document.addEventListener("keydown", (event) => {
+    const isTyping = ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName);
+    if (event.key === "Escape") closePalette();
+    if (event.key === "/" && !isTyping) {
+      event.preventDefault();
+      openPalette();
+    }
+  });
   $("#pick-files").addEventListener("click", () => $("#file-input").click());
   $("#file-input").addEventListener("change", async (event) => {
     await saveFiles(event.target.files);
@@ -1276,6 +1475,7 @@ function bindEvents() {
     const note = event.target.closest("[data-note]");
     if (!note) return;
     setNote(note.dataset.note, note.value);
+    renderActivityBoard();
   });
 
   const zone = $("#upload-zone");
@@ -1301,6 +1501,9 @@ async function init() {
   state.selectedId = docs[0]?.id || "";
   state.statuses = readLocalMap(statusStorageKey);
   state.notes = readLocalMap(notesStorageKey);
+  state.activity = readLocalMap(activityStorageKey);
+  updateClock();
+  window.setInterval(updateClock, 30000);
   bindEvents();
   state.uploads = await loadUploads();
   setViewFromHash();
