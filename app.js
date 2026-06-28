@@ -1,4 +1,6 @@
-const docs = [
+let docs = [];
+
+const fallbackDocs = [
   {
     id: "qos-lab",
     title: "QOS实验",
@@ -204,14 +206,37 @@ const state = {
   query: "",
   type: "全部",
   sort: "recent",
-  selectedId: docs[0].id,
+  selectedId: "",
   uploads: [],
+  statuses: {},
+  notes: {},
 };
 
 let motionBound = false;
 
 const dbName = "personal-knowledge-base";
 const storeName = "pending-files";
+const statusStorageKey = "personal-knowledge-status";
+const notesStorageKey = "personal-knowledge-notes";
+
+const statusOptions = [
+  { id: "unread", label: "未读" },
+  { id: "read", label: "已读" },
+  { id: "reproduced", label: "已复现" },
+  { id: "mastered", label: "已掌握" },
+  { id: "review", label: "重点复盘" },
+];
+
+const protocolNodes = [
+  { id: "vpn", label: "VPN", query: "VPN", terms: ["VPN", "IPSec", "GRE"] },
+  { id: "vlan", label: "VLAN", query: "VLAN", terms: ["VLAN", "私有VLAN"] },
+  { id: "qinq", label: "QinQ", query: "QinQ", terms: ["QinQ"] },
+  { id: "stp", label: "STP", query: "MSTP", terms: ["MSTP"] },
+  { id: "ha", label: "HA", query: "VRRP", terms: ["VRRP", "IRF", "MAD", "BFD"] },
+  { id: "link", label: "链路", query: "链路聚合", terms: ["链路聚合", "Smart-Link", "RRPP"] },
+  { id: "qos", label: "QOS", query: "QOS", terms: ["QOS"] },
+  { id: "h3cne", label: "H3CNE", query: "H3CNE", terms: ["H3CNE", "综合实验"] },
+];
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -256,6 +281,54 @@ function showToast(message) {
   toast.classList.add("show");
   window.clearTimeout(showToast.timer);
   showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 2200);
+}
+
+async function loadDocuments() {
+  try {
+    const response = await fetch("./docs/documents.json?v=20260628-cockpit", { cache: "no-cache" });
+    if (!response.ok) throw new Error(`documents.json ${response.status}`);
+    const items = await response.json();
+    return Array.isArray(items) ? items : fallbackDocs;
+  } catch (error) {
+    console.warn(error);
+    showToast("资料索引读取失败，已使用本地备份");
+    return fallbackDocs;
+  }
+}
+
+function readLocalMap(key) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key) || "{}");
+    return value && typeof value === "object" ? value : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveLocalMap(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function getStatus(id) {
+  return state.statuses[id] || "unread";
+}
+
+function getStatusLabel(id) {
+  return statusOptions.find((item) => item.id === id)?.label || statusOptions[0].label;
+}
+
+function setStatus(id, status) {
+  state.statuses[id] = status;
+  saveLocalMap(statusStorageKey, state.statuses);
+}
+
+function getNote(id) {
+  return state.notes[id] || "";
+}
+
+function setNote(id, note) {
+  state.notes[id] = note;
+  saveLocalMap(notesStorageKey, state.notes);
 }
 
 function openDb() {
@@ -362,10 +435,14 @@ function getTypes() {
   return ["全部", ...new Set(docs.map((doc) => doc.type))];
 }
 
+function docHaystack(doc) {
+  return `${doc.title} ${doc.type} ${doc.tags.join(" ")} ${doc.summary} ${doc.owner}`.toLowerCase();
+}
+
 function filteredDocs() {
   const query = state.query.trim().toLowerCase();
   const result = docs.filter((doc) => {
-    const haystack = `${doc.title} ${doc.type} ${doc.tags.join(" ")} ${doc.summary} ${doc.owner}`.toLowerCase();
+    const haystack = docHaystack(doc);
     const matchesQuery = !query || haystack.includes(query);
     const matchesType = state.type === "全部" || doc.type === state.type;
     return matchesQuery && matchesType;
@@ -379,11 +456,11 @@ function filteredDocs() {
 }
 
 function renderStats() {
-  const uploadBytes = state.uploads.reduce((sum, file) => sum + file.size, 0);
+  const mastered = docs.filter((doc) => getStatus(doc.id) === "mastered").length;
   $("#stat-docs").textContent = docs.length;
   $("#stat-tags").textContent = getTags().length;
   $("#stat-uploads").textContent = state.uploads.length;
-  $("#stat-size").textContent = formatSize(uploadBytes);
+  $("#stat-progress").textContent = `${mastered}/${docs.length}`;
 }
 
 function renderRecent() {
@@ -397,7 +474,7 @@ function renderRecent() {
         <a class="compact-item" href="#library" data-select-doc="${doc.id}">
           <span>
             <strong>${doc.title}</strong>
-            <span>${doc.type} / ${doc.updated}</span>
+            <span>${doc.type} / ${getStatusLabel(getStatus(doc.id))}</span>
           </span>
           <span class="type-pill">${doc.tags[0]}</span>
         </a>
@@ -414,6 +491,74 @@ function renderTagCloud() {
 
   $("#tag-cloud").innerHTML = counts
     .map((item) => `<button class="tag" data-tag="${item.tag}">${item.tag} · ${item.count}</button>`)
+    .join("");
+}
+
+function getProtocolStats() {
+  return protocolNodes
+    .map((node) => {
+      const count = docs.filter((doc) => {
+        const haystack = docHaystack(doc);
+        return node.terms.some((term) => haystack.includes(term.toLowerCase()));
+      }).length;
+      return { ...node, count };
+    })
+    .filter((node) => node.count > 0);
+}
+
+function renderTopology() {
+  const map = $("#topology-map");
+  const detail = $("#topology-detail");
+  if (!map || !detail) return;
+
+  const nodes = getProtocolStats();
+  const points = nodes.map((node, index) => {
+    const angle = -90 + (360 / nodes.length) * index;
+    const radians = (angle * Math.PI) / 180;
+    return {
+      ...node,
+      x: 50 + Math.cos(radians) * 34,
+      y: 50 + Math.sin(radians) * 34,
+      angle,
+    };
+  });
+
+  map.innerHTML = `
+    <svg class="topology-lines" viewBox="0 0 100 100" aria-hidden="true">
+      ${points
+        .map((point) => `<line x1="50" y1="50" x2="${point.x.toFixed(2)}" y2="${point.y.toFixed(2)}"></line>`)
+        .join("")}
+    </svg>
+    <button class="topology-core" data-protocol="H3C" type="button">
+      <strong>${docs.length}</strong>
+      <span>H3C LAB</span>
+    </button>
+    ${points
+      .map(
+        (point, index) => `
+          <button
+            class="topology-node"
+            data-protocol="${point.query}"
+            type="button"
+            style="--x: ${point.x.toFixed(2)}%; --y: ${point.y.toFixed(2)}%; --delay: ${index * 130}ms"
+          >
+            <strong>${point.label}</strong>
+            <span>${point.count}</span>
+          </button>
+        `,
+      )
+      .join("")}
+  `;
+
+  detail.innerHTML = points
+    .map(
+      (point) => `
+        <button class="protocol-chip" data-protocol="${point.query}" type="button">
+          <span>${point.label}</span>
+          <strong>${point.count}</strong>
+        </button>
+      `,
+    )
     .join("");
 }
 
@@ -447,9 +592,10 @@ function renderLibrary() {
   listEl.innerHTML = list
     .map(
       (doc, index) => `
-        <article class="doc-card ${state.selectedId === doc.id ? "active" : ""}" data-doc-id="${doc.id}" style="--card-index: ${index}">
+        <article class="doc-card status-${getStatus(doc.id)} ${state.selectedId === doc.id ? "active" : ""}" data-doc-id="${doc.id}" style="--card-index: ${index}">
           <div class="doc-meta">
             <span class="type-pill">${doc.type}</span>
+            <span class="status-pill">${getStatusLabel(getStatus(doc.id))}</span>
             <span>${doc.updated}</span>
             <span>${formatDocSize(doc.size)}</span>
           </div>
@@ -468,7 +614,14 @@ function renderLibrary() {
 
 function renderDetail() {
   const doc = docs.find((item) => item.id === state.selectedId) || docs[0];
+  if (!doc) {
+    $("#detail-panel").innerHTML = `<div class="empty">正在读取资料索引</div>`;
+    return;
+  }
+
   const isPdf = doc.file.toLowerCase().endsWith(".pdf");
+  const status = getStatus(doc.id);
+  const note = getNote(doc.id);
   $("#detail-panel").innerHTML = `
     <span class="type-pill">${doc.type}</span>
     <h2>${doc.title}</h2>
@@ -481,13 +634,38 @@ function renderDetail() {
     <div class="tag-cloud" style="margin-top:16px">
       ${doc.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}
     </div>
+    <div class="status-control" aria-label="学习状态">
+      ${statusOptions
+        .map(
+          (item) => `
+            <button class="${status === item.id ? "active" : ""}" data-status="${item.id}" data-status-doc="${doc.id}" type="button">
+              ${item.label}
+            </button>
+          `,
+        )
+        .join("")}
+    </div>
     ${
       isPdf
         ? `<div class="pdf-preview">
             <iframe src="${doc.file}#view=FitH" title="${doc.title} PDF 预览"></iframe>
+          </div>
+          <div class="mobile-pdf-actions">
+            <a class="button primary" href="${doc.file}" target="_blank" rel="noreferrer">
+              <i data-lucide="external-link"></i>
+              <span>手机打开</span>
+            </a>
+            <a class="button secondary" href="${doc.file}" download>
+              <i data-lucide="download"></i>
+              <span>保存PDF</span>
+            </a>
           </div>`
         : ""
     }
+    <label class="note-pad">
+      <span>个人笔记</span>
+      <textarea data-note="${doc.id}" rows="5" placeholder="关键命令、踩坑点、复盘结论">${note}</textarea>
+    </label>
     <div class="detail-actions">
       <a class="button primary" href="${doc.file}" download>
         <i data-lucide="download"></i>
@@ -495,7 +673,7 @@ function renderDetail() {
       </a>
       <a class="button secondary" href="${doc.file}" target="_blank" rel="noreferrer">
         <i data-lucide="external-link"></i>
-        <span>打开</span>
+        <span>新标签打开</span>
       </a>
     </div>
   `;
@@ -546,6 +724,7 @@ function renderAll() {
   renderStats();
   renderRecent();
   renderTagCloud();
+  renderTopology();
   renderLibrary();
   renderUploads();
   refreshIcons();
@@ -723,6 +902,8 @@ function bindEvents() {
     const docCard = event.target.closest("[data-doc-id]");
     const recent = event.target.closest("[data-select-doc]");
     const tag = event.target.closest("[data-tag]");
+    const protocol = event.target.closest("[data-protocol]");
+    const statusButton = event.target.closest("[data-status][data-status-doc]");
     const downloadButton = event.target.closest("[data-download-upload]");
     const deleteButton = event.target.closest("[data-delete-upload]");
 
@@ -746,6 +927,21 @@ function bindEvents() {
       renderAll();
     }
 
+    if (protocol) {
+      state.query = protocol.dataset.protocol;
+      $("#search-input").value = state.query;
+      state.type = "全部";
+      state.view = "library";
+      location.hash = "library";
+      renderAll();
+    }
+
+    if (statusButton) {
+      setStatus(statusButton.dataset.statusDoc, statusButton.dataset.status);
+      renderAll();
+      showToast(`状态已更新为 ${getStatusLabel(statusButton.dataset.status)}`);
+    }
+
     if (downloadButton) {
       downloadUpload(downloadButton.dataset.downloadUpload);
     }
@@ -762,6 +958,11 @@ function bindEvents() {
     event.target.value = "";
   });
   $("#clear-uploads").addEventListener("click", clearUploads);
+  document.body.addEventListener("input", (event) => {
+    const note = event.target.closest("[data-note]");
+    if (!note) return;
+    setNote(note.dataset.note, note.value);
+  });
 
   const zone = $("#upload-zone");
   ["dragenter", "dragover"].forEach((name) => {
@@ -781,6 +982,10 @@ function bindEvents() {
 
 async function init() {
   bindMotion();
+  docs = await loadDocuments();
+  state.selectedId = docs[0]?.id || "";
+  state.statuses = readLocalMap(statusStorageKey);
+  state.notes = readLocalMap(notesStorageKey);
   bindEvents();
   state.uploads = await loadUploads();
   setViewFromHash();

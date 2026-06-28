@@ -1,0 +1,200 @@
+[
+  {
+    "id": "qos-lab",
+    "title": "QOS实验",
+    "type": "广域网",
+    "tags": ["H3C", "QOS", "广域网", "PDF"],
+    "updated": "2026-06-13",
+    "size": 533,
+    "file": "./docs/h3c/qos-lab.pdf",
+    "summary": "H3C 广域网 QOS 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 广域网"
+  },
+  {
+    "id": "ipsec-vpn-lab",
+    "title": "IP Sec VPN",
+    "type": "广域网",
+    "tags": ["H3C", "IPSec", "VPN", "广域网", "PDF"],
+    "updated": "2026-05-31",
+    "size": 425,
+    "file": "./docs/h3c/ipsec-vpn-lab.pdf",
+    "summary": "H3C 广域网 IP Sec VPN 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 广域网"
+  },
+  {
+    "id": "gre-vpn-lab",
+    "title": "GRE VPN实验",
+    "type": "广域网",
+    "tags": ["H3C", "GRE", "VPN", "广域网", "PDF"],
+    "updated": "2025-12-16",
+    "size": 369,
+    "file": "./docs/h3c/gre-vpn-lab.pdf",
+    "summary": "H3C 广域网 GRE VPN 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 广域网"
+  },
+  {
+    "id": "ipsec-vpn-main-mode-lab",
+    "title": "IPsec-VPN main_mode",
+    "type": "广域网",
+    "tags": ["H3C", "IPSec", "VPN", "main mode", "PDF"],
+    "updated": "2025-12-16",
+    "size": 374,
+    "file": "./docs/h3c/ipsec-vpn-main-mode-lab.pdf",
+    "summary": "H3C IPsec-VPN main mode 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 广域网"
+  },
+  {
+    "id": "bfd-lab",
+    "title": "BFD实验",
+    "type": "高性能园区网",
+    "tags": ["H3C", "BFD", "园区网", "PDF"],
+    "updated": "2025-12-14",
+    "size": 334,
+    "file": "./docs/h3c/bfd-lab.pdf",
+    "summary": "H3C 高性能园区网 BFD 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 高性能园区网"
+  },
+  {
+    "id": "basic-qinq-lab",
+    "title": "基本QinQ",
+    "type": "高性能园区网",
+    "tags": ["H3C", "QinQ", "园区网", "PDF"],
+    "updated": "2025-11-30",
+    "size": 464,
+    "file": "./docs/h3c/basic-qinq-lab.pdf",
+    "summary": "H3C 高性能园区网基本 QinQ 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 高性能园区网"
+  },
+  {
+    "id": "flexible-qinq-lab",
+    "title": "灵活QinQ",
+    "type": "高性能园区网",
+    "tags": ["H3C", "QinQ", "园区网", "PDF"],
+    "updated": "2025-11-30",
+    "size": 471,
+    "file": "./docs/h3c/flexible-qinq-lab.pdf",
+    "summary": "H3C 高性能园区网灵活 QinQ 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 高性能园区网"
+  },
+  {
+    "id": "irf-mad-lab",
+    "title": "IRF与MAD实验",
+    "type": "高性能园区网",
+    "tags": ["H3C", "IRF", "MAD", "园区网", "PDF"],
+    "updated": "2025-11-21",
+    "size": 418,
+    "file": "./docs/h3c/irf-mad-lab.pdf",
+    "summary": "H3C 高性能园区网 IRF 与 MAD 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 高性能园区网"
+  },
+  {
+    "id": "mstp-lab",
+    "title": "MSTP实验",
+    "type": "高性能园区网",
+    "tags": ["H3C", "MSTP", "园区网", "PDF"],
+    "updated": "2025-11-21",
+    "size": 439,
+    "file": "./docs/h3c/mstp-lab.pdf",
+    "summary": "H3C 高性能园区网 MSTP 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 高性能园区网"
+  },
+  {
+    "id": "vrrp-lab",
+    "title": "VRRP实验",
+    "type": "高性能园区网",
+    "tags": ["H3C", "VRRP", "园区网", "PDF"],
+    "updated": "2025-11-18",
+    "size": 472,
+    "file": "./docs/h3c/vrrp-lab.pdf",
+    "summary": "H3C 高性能园区网 VRRP 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 高性能园区网"
+  },
+  {
+    "id": "rrpp-lab",
+    "title": "RRPP实验",
+    "type": "高性能园区网",
+    "tags": ["H3C", "RRPP", "园区网", "PDF"],
+    "updated": "2025-11-17",
+    "size": 437,
+    "file": "./docs/h3c/rrpp-lab.pdf",
+    "summary": "H3C 高性能园区网 RRPP 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 高性能园区网"
+  },
+  {
+    "id": "smart-link-lab",
+    "title": "Smart-Link实验",
+    "type": "高性能园区网",
+    "tags": ["H3C", "Smart-Link", "园区网", "PDF"],
+    "updated": "2025-11-13",
+    "size": 497,
+    "file": "./docs/h3c/smart-link-lab.pdf",
+    "summary": "H3C 高性能园区网 Smart-Link 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 高性能园区网"
+  },
+  {
+    "id": "vlan-routing-lab",
+    "title": "VLAN路由实验",
+    "type": "高性能园区网",
+    "tags": ["H3C", "VLAN", "路由", "园区网", "PDF"],
+    "updated": "2025-11-12",
+    "size": 375,
+    "file": "./docs/h3c/vlan-routing-lab.pdf",
+    "summary": "H3C 高性能园区网 VLAN 路由实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 高性能园区网"
+  },
+  {
+    "id": "link-aggregation-lab",
+    "title": "链路聚合实验",
+    "type": "高性能园区网",
+    "tags": ["H3C", "链路聚合", "园区网", "PDF"],
+    "updated": "2025-11-12",
+    "size": 209,
+    "file": "./docs/h3c/link-aggregation-lab.pdf",
+    "summary": "H3C 高性能园区网链路聚合实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 高性能园区网"
+  },
+  {
+    "id": "private-vlan-lab",
+    "title": "私有VLAN实验",
+    "type": "高性能园区网",
+    "tags": ["H3C", "私有VLAN", "园区网", "PDF"],
+    "updated": "2025-11-11",
+    "size": 357,
+    "file": "./docs/h3c/private-vlan-lab.pdf",
+    "summary": "H3C 高性能园区网私有 VLAN 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 高性能园区网"
+  },
+  {
+    "id": "hybrid-lab",
+    "title": "Hybrid实验",
+    "type": "高性能园区网",
+    "tags": ["H3C", "Hybrid", "园区网", "PDF"],
+    "updated": "2025-11-10",
+    "size": 358,
+    "file": "./docs/h3c/hybrid-lab.pdf",
+    "summary": "H3C 高性能园区网 Hybrid 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 高性能园区网"
+  },
+  {
+    "id": "mvrp-lab",
+    "title": "MVRP实验",
+    "type": "高性能园区网",
+    "tags": ["H3C", "MVRP", "园区网", "PDF"],
+    "updated": "2025-11-10",
+    "size": 268,
+    "file": "./docs/h3c/mvrp-lab.pdf",
+    "summary": "H3C 高性能园区网 MVRP 实验文档，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / 高性能园区网"
+  },
+  {
+    "id": "h3cne-comprehensive-lab",
+    "title": "H3CNE综合实验",
+    "type": "H3CNE实验文档",
+    "tags": ["H3CNE", "综合实验", "拓扑", "PDF"],
+    "updated": "2025-11-08",
+    "size": 1551,
+    "file": "./docs/h3c/h3cne-comprehensive-lab.pdf",
+    "summary": "H3CNE 综合实验 PDF，可在站内预览并下载归档。",
+    "owner": "H3C实验拓扑 / H3CNE实验文档"
+  }
+]

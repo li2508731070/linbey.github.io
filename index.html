@@ -8,7 +8,7 @@
       name="description"
       content="个人实验文档、资料归档、检索与临时上传暂存空间。"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260628-h3c" />
+    <link rel="stylesheet" href="./styles.css?v=20260628-cockpit" />
   </head>
   <body>
     <div class="ambient-backdrop" aria-hidden="true">
@@ -78,8 +78,8 @@
               <span></span>
             </div>
             <div class="hero-content">
-              <span class="eyebrow">Personal Knowledge Vault</span>
-              <h1>把实验记录、资料和想法收进一个可检索的空间。</h1>
+              <span class="eyebrow">H3C Lab Cockpit</span>
+              <h1>把网络实验、拓扑资料和复盘笔记接进一个动态控制台。</h1>
               <div class="hero-actions">
                 <a class="button primary" href="#library">
                   <i data-lucide="search"></i>
@@ -110,10 +110,23 @@
               <strong id="stat-uploads">0</strong>
             </article>
             <article class="stat-card">
-              <i data-lucide="hard-drive-download"></i>
-              <span>容量</span>
-              <strong id="stat-size">0 MB</strong>
+              <i data-lucide="shield-check"></i>
+              <span>掌握</span>
+              <strong id="stat-progress">0/0</strong>
             </article>
+          </section>
+
+          <section class="topology-panel panel" aria-label="实验拓扑星图">
+            <div class="section-head">
+              <div>
+                <span class="eyebrow">Topology</span>
+                <h2>协议拓扑星图</h2>
+              </div>
+            </div>
+            <div class="topology-layout">
+              <div class="topology-map" id="topology-map"></div>
+              <div class="protocol-grid" id="topology-detail"></div>
+            </div>
           </section>
 
           <section class="split">
@@ -236,6 +249,6 @@
     </div>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
-    <script src="./app.js?v=20260628-h3c"></script>
+    <script src="./app.js?v=20260628-cockpit"></script>
   </body>
 </html>
