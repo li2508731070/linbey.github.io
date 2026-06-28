@@ -1,47 +1,201 @@
 const docs = [
   {
-    id: "electrochemistry-cell",
-    title: "电化学电池实验记录模板",
-    type: "实验文档",
-    tags: ["电化学", "模板", "实验记录"],
-    updated: "2026-06-18",
-    size: 128,
-    file: "./docs/electrochemistry-cell.md",
-    summary: "记录电极材料、循环伏安参数、阻抗测试条件和异常现象。",
-    owner: "个人实验",
+    id: "qos-lab",
+    title: "QOS实验",
+    type: "广域网",
+    tags: ["H3C", "QOS", "广域网", "PDF"],
+    updated: "2026-06-13",
+    size: 533,
+    file: "./docs/h3c/qos-lab.pdf",
+    summary: "H3C 广域网 QOS 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 广域网",
   },
   {
-    id: "material-characterization",
-    title: "材料表征资料整理规范",
-    type: "资料",
-    tags: ["XRD", "SEM", "表征", "归档"],
-    updated: "2026-06-12",
-    size: 236,
-    file: "./docs/material-characterization.md",
-    summary: "统一命名、图谱编号、原始数据位置和处理版本记录。",
-    owner: "资料库",
+    id: "ipsec-vpn-lab",
+    title: "IP Sec VPN",
+    type: "广域网",
+    tags: ["H3C", "IPSec", "VPN", "广域网", "PDF"],
+    updated: "2026-05-31",
+    size: 425,
+    file: "./docs/h3c/ipsec-vpn-lab.pdf",
+    summary: "H3C 广域网 IP Sec VPN 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 广域网",
   },
   {
-    id: "safety-checklist",
-    title: "实验安全检查清单",
-    type: "清单",
-    tags: ["安全", "SOP", "检查"],
-    updated: "2026-05-29",
-    size: 84,
-    file: "./docs/safety-checklist.md",
-    summary: "面向高温、强酸碱、有机溶剂和仪器通电前后的基础检查项。",
-    owner: "常用",
+    id: "gre-vpn-lab",
+    title: "GRE VPN实验",
+    type: "广域网",
+    tags: ["H3C", "GRE", "VPN", "广域网", "PDF"],
+    updated: "2025-12-16",
+    size: 369,
+    file: "./docs/h3c/gre-vpn-lab.pdf",
+    summary: "H3C 广域网 GRE VPN 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 广域网",
   },
   {
-    id: "literature-digest",
-    title: "文献速读笔记样例",
-    type: "笔记",
-    tags: ["文献", "笔记", "方法"],
-    updated: "2026-05-18",
-    size: 64,
-    file: "./docs/literature-digest.md",
-    summary: "从研究问题、关键方法、可复现实验和可借鉴图表四个维度记录。",
-    owner: "阅读",
+    id: "ipsec-vpn-main-mode-lab",
+    title: "IPsec-VPN main_mode",
+    type: "广域网",
+    tags: ["H3C", "IPSec", "VPN", "main mode", "PDF"],
+    updated: "2025-12-16",
+    size: 374,
+    file: "./docs/h3c/ipsec-vpn-main-mode-lab.pdf",
+    summary: "H3C IPsec-VPN main mode 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 广域网",
+  },
+  {
+    id: "bfd-lab",
+    title: "BFD实验",
+    type: "高性能园区网",
+    tags: ["H3C", "BFD", "园区网", "PDF"],
+    updated: "2025-12-14",
+    size: 334,
+    file: "./docs/h3c/bfd-lab.pdf",
+    summary: "H3C 高性能园区网 BFD 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 高性能园区网",
+  },
+  {
+    id: "basic-qinq-lab",
+    title: "基本QinQ",
+    type: "高性能园区网",
+    tags: ["H3C", "QinQ", "园区网", "PDF"],
+    updated: "2025-11-30",
+    size: 464,
+    file: "./docs/h3c/basic-qinq-lab.pdf",
+    summary: "H3C 高性能园区网基本 QinQ 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 高性能园区网",
+  },
+  {
+    id: "flexible-qinq-lab",
+    title: "灵活QinQ",
+    type: "高性能园区网",
+    tags: ["H3C", "QinQ", "园区网", "PDF"],
+    updated: "2025-11-30",
+    size: 471,
+    file: "./docs/h3c/flexible-qinq-lab.pdf",
+    summary: "H3C 高性能园区网灵活 QinQ 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 高性能园区网",
+  },
+  {
+    id: "irf-mad-lab",
+    title: "IRF与MAD实验",
+    type: "高性能园区网",
+    tags: ["H3C", "IRF", "MAD", "园区网", "PDF"],
+    updated: "2025-11-21",
+    size: 418,
+    file: "./docs/h3c/irf-mad-lab.pdf",
+    summary: "H3C 高性能园区网 IRF 与 MAD 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 高性能园区网",
+  },
+  {
+    id: "mstp-lab",
+    title: "MSTP实验",
+    type: "高性能园区网",
+    tags: ["H3C", "MSTP", "园区网", "PDF"],
+    updated: "2025-11-21",
+    size: 439,
+    file: "./docs/h3c/mstp-lab.pdf",
+    summary: "H3C 高性能园区网 MSTP 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 高性能园区网",
+  },
+  {
+    id: "vrrp-lab",
+    title: "VRRP实验",
+    type: "高性能园区网",
+    tags: ["H3C", "VRRP", "园区网", "PDF"],
+    updated: "2025-11-18",
+    size: 472,
+    file: "./docs/h3c/vrrp-lab.pdf",
+    summary: "H3C 高性能园区网 VRRP 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 高性能园区网",
+  },
+  {
+    id: "rrpp-lab",
+    title: "RRPP实验",
+    type: "高性能园区网",
+    tags: ["H3C", "RRPP", "园区网", "PDF"],
+    updated: "2025-11-17",
+    size: 437,
+    file: "./docs/h3c/rrpp-lab.pdf",
+    summary: "H3C 高性能园区网 RRPP 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 高性能园区网",
+  },
+  {
+    id: "smart-link-lab",
+    title: "Smart-Link实验",
+    type: "高性能园区网",
+    tags: ["H3C", "Smart-Link", "园区网", "PDF"],
+    updated: "2025-11-13",
+    size: 497,
+    file: "./docs/h3c/smart-link-lab.pdf",
+    summary: "H3C 高性能园区网 Smart-Link 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 高性能园区网",
+  },
+  {
+    id: "vlan-routing-lab",
+    title: "VLAN路由实验",
+    type: "高性能园区网",
+    tags: ["H3C", "VLAN", "路由", "园区网", "PDF"],
+    updated: "2025-11-12",
+    size: 375,
+    file: "./docs/h3c/vlan-routing-lab.pdf",
+    summary: "H3C 高性能园区网 VLAN 路由实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 高性能园区网",
+  },
+  {
+    id: "link-aggregation-lab",
+    title: "链路聚合实验",
+    type: "高性能园区网",
+    tags: ["H3C", "链路聚合", "园区网", "PDF"],
+    updated: "2025-11-12",
+    size: 209,
+    file: "./docs/h3c/link-aggregation-lab.pdf",
+    summary: "H3C 高性能园区网链路聚合实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 高性能园区网",
+  },
+  {
+    id: "private-vlan-lab",
+    title: "私有VLAN实验",
+    type: "高性能园区网",
+    tags: ["H3C", "私有VLAN", "园区网", "PDF"],
+    updated: "2025-11-11",
+    size: 357,
+    file: "./docs/h3c/private-vlan-lab.pdf",
+    summary: "H3C 高性能园区网私有 VLAN 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 高性能园区网",
+  },
+  {
+    id: "hybrid-lab",
+    title: "Hybrid实验",
+    type: "高性能园区网",
+    tags: ["H3C", "Hybrid", "园区网", "PDF"],
+    updated: "2025-11-10",
+    size: 358,
+    file: "./docs/h3c/hybrid-lab.pdf",
+    summary: "H3C 高性能园区网 Hybrid 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 高性能园区网",
+  },
+  {
+    id: "mvrp-lab",
+    title: "MVRP实验",
+    type: "高性能园区网",
+    tags: ["H3C", "MVRP", "园区网", "PDF"],
+    updated: "2025-11-10",
+    size: 268,
+    file: "./docs/h3c/mvrp-lab.pdf",
+    summary: "H3C 高性能园区网 MVRP 实验文档，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / 高性能园区网",
+  },
+  {
+    id: "h3cne-comprehensive-lab",
+    title: "H3CNE综合实验",
+    type: "H3CNE实验文档",
+    tags: ["H3CNE", "综合实验", "拓扑", "PDF"],
+    updated: "2025-11-08",
+    size: 1551,
+    file: "./docs/h3c/h3cne-comprehensive-lab.pdf",
+    summary: "H3CNE 综合实验 PDF，可在站内预览并下载归档。",
+    owner: "H3C实验拓扑 / H3CNE实验文档",
   },
 ];
 
@@ -83,6 +237,7 @@ const fallbackIcons = {
   tags: '<path d="m15 5 6 6-8 8-6-6 8-8Z"/><path d="M14 6H4v10"/><circle cx="17" cy="9" r="1"/>',
   "trash-2": '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>',
   "upload-cloud": '<path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20 16.6A5 5 0 0 0 18 7h-1.3A7 7 0 1 0 4 14.9"/>',
+  x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
 };
 
 function formatSize(bytes) {
@@ -152,8 +307,10 @@ async function loadUploads() {
 }
 
 async function saveFiles(files) {
+  if (!files.length) return;
+
   const items = [...files].map((file) => ({
-    id: `${Date.now()}-${crypto.randomUUID()}`,
+    id: `${Date.now()}-${crypto.randomUUID?.() || Math.random().toString(36).slice(2)}`,
     name: file.name,
     type: file.type || "application/octet-stream",
     size: file.size,
@@ -311,6 +468,7 @@ function renderLibrary() {
 
 function renderDetail() {
   const doc = docs.find((item) => item.id === state.selectedId) || docs[0];
+  const isPdf = doc.file.toLowerCase().endsWith(".pdf");
   $("#detail-panel").innerHTML = `
     <span class="type-pill">${doc.type}</span>
     <h2>${doc.title}</h2>
@@ -323,6 +481,13 @@ function renderDetail() {
     <div class="tag-cloud" style="margin-top:16px">
       ${doc.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}
     </div>
+    ${
+      isPdf
+        ? `<div class="pdf-preview">
+            <iframe src="${doc.file}#view=FitH" title="${doc.title} PDF 预览"></iframe>
+          </div>`
+        : ""
+    }
     <div class="detail-actions">
       <a class="button primary" href="${doc.file}" download>
         <i data-lucide="download"></i>
@@ -532,6 +697,14 @@ function bindEvents() {
     refreshIcons();
   });
 
+  $("#clear-search").addEventListener("click", () => {
+    state.query = "";
+    $("#search-input").value = "";
+    renderLibrary();
+    refreshIcons();
+    showToast("已清空搜索");
+  });
+
   $("#sort-select").addEventListener("change", (event) => {
     state.sort = event.target.value;
     renderLibrary();
@@ -584,7 +757,10 @@ function bindEvents() {
 
   $("#export-index").addEventListener("click", exportIndex);
   $("#pick-files").addEventListener("click", () => $("#file-input").click());
-  $("#file-input").addEventListener("change", (event) => saveFiles(event.target.files));
+  $("#file-input").addEventListener("change", async (event) => {
+    await saveFiles(event.target.files);
+    event.target.value = "";
+  });
   $("#clear-uploads").addEventListener("click", clearUploads);
 
   const zone = $("#upload-zone");
