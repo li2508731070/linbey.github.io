@@ -196,5 +196,29 @@
     "file": "./docs/h3c/h3cne-comprehensive-lab.pdf",
     "summary": "H3CNE 综合实验 PDF，可在站内预览并下载归档。",
     "owner": "H3C实验拓扑 / H3CNE实验文档"
+  },
+  {
+    "id": "ospf-peer-note",
+    "title": "OSPF 邻居排查笔记",
+    "type": "路由协议笔记",
+    "tags": ["H3C", "OSPF", "邻居", "Markdown", "排障"],
+    "updated": "2026-06-30",
+    "size": 2,
+    "file": "./docs/notes/ospf-peer-note.md",
+    "summary": "记录 display ospf peer 的重点字段、邻居状态判断和常见排查顺序。",
+    "purpose": "用于 OSPF 邻居无法 Full、路由未学习、区域参数不一致时快速复盘。",
+    "owner": "个人笔记 / 路由协议"
+  },
+  {
+    "id": "ipsec-vpn-checklist",
+    "title": "IPSec VPN 排障检查清单",
+    "type": "配置检查清单",
+    "tags": ["H3C", "IPSec", "VPN", "配置", "Checklist"],
+    "updated": "2026-06-30",
+    "size": 1,
+    "file": "./docs/configs/ipsec-vpn-checklist.cfg",
+    "summary": "用于记录 IPSec VPN 常用检查命令和协商失败时的核对项。",
+    "purpose": "适合临时排障时按顺序检查 IKE SA、IPSec SA、ACL 感兴趣流和回程路由。",
+    "owner": "个人配置 / VPN"
   }
 ]

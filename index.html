@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>H3C Cyber Lab OS</title>
+    <title>个人网络资料库 + 命令速查中心</title>
     <meta
       name="description"
-      content="个人网络实验 OS：H3C 实验资料、协议拓扑、命令速查、训练复盘与移动端 PDF 查阅。"
+      content="个人网络资料库与命令速查中心：集中管理 PDF、Markdown、配置文档、实验资料、命令索引和排障记录。"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260628-persona" />
+    <link rel="stylesheet" href="./styles.css?v=20260630-static-core" />
   </head>
   <body>
     <div class="ambient-backdrop" aria-hidden="true">
@@ -25,187 +25,171 @@
         <span style="--i: 5; --x: 42%; --y: 50%; --r: 4deg; --d: 28s"></span>
       </div>
     </div>
+
     <div class="app-shell">
-      <aside class="sidebar" aria-label="知识库导航">
-        <a class="brand" href="#overview" aria-label="个人知识库首页">
-          <span class="brand-mark">K</span>
+      <aside class="sidebar" aria-label="资料库导航">
+        <a class="brand" href="#overview" aria-label="资料库首页">
+          <span class="brand-mark">N</span>
           <span>
-            <strong>Cyber Lab OS</strong>
-            <small>Network Experiment System</small>
+            <strong>Net Knowledge Base</strong>
+            <small>Docs / Commands / Troubleshooting</small>
           </span>
         </a>
 
         <nav class="nav-list">
           <a class="nav-item active" href="#overview" data-view-link="overview">
             <i data-lucide="layout-dashboard"></i>
-            <span>总览</span>
+            <span>总览搜索</span>
           </a>
           <a class="nav-item" href="#library" data-view-link="library">
             <i data-lucide="library"></i>
             <span>资料库</span>
           </a>
+          <a class="nav-item" href="#commands" data-view-link="commands">
+            <i data-lucide="search"></i>
+            <span>Command Center</span>
+          </a>
+          <a class="nav-item" href="#troubleshooting" data-view-link="troubleshooting">
+            <i data-lucide="shield-check"></i>
+            <span>排障记录</span>
+          </a>
           <a class="nav-item" href="#uploads" data-view-link="uploads">
             <i data-lucide="upload-cloud"></i>
-            <span>临时上传</span>
-          </a>
-          <a class="nav-item" href="#settings" data-view-link="settings">
-            <i data-lucide="settings-2"></i>
-            <span>接入配置</span>
+            <span>临时暂存</span>
           </a>
           <button class="nav-item nav-command" id="open-palette" type="button">
             <i data-lucide="search"></i>
-            <span>命令面板</span>
+            <span>快速搜索</span>
           </button>
         </nav>
 
         <div class="sidebar-card">
           <span class="status-dot"></span>
           <div>
-            <strong>GitHub Pages Ready</strong>
-            <small>静态部署 / API 预留</small>
+            <strong>Static GitHub Pages</strong>
+            <small>本地 JSON / localStorage / 无后端</small>
           </div>
         </div>
       </aside>
 
       <main class="main">
         <section id="overview" class="view active" data-view="overview">
-          <header class="hero">
-            <img
-              class="hero-image"
-              src="./assets/knowledge-hero.png"
-              alt="实验文档和知识归档空间"
-            />
+          <header class="hero home-hero">
+            <img class="hero-image" src="./assets/knowledge-hero.png" alt="网络资料库控制台" />
             <div class="hero-overlay"></div>
             <div class="hero-motion" aria-hidden="true">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
+              <span></span><span></span><span></span><span></span>
             </div>
             <div class="hero-content">
-              <span class="eyebrow">H3C Cyber Lab OS</span>
-              <h1>把网络实验、拓扑资料、命令和排错训练接进一个夜间控制台。</h1>
+              <span class="eyebrow">Personal Network Knowledge Base</span>
+              <h1>个人网络资料库 + 命令速查中心</h1>
+              <label class="home-search">
+                <i data-lucide="search"></i>
+                <input id="global-search" type="search" placeholder="输入命令、协议、PDF 名称或故障现象" />
+              </label>
               <div class="identity-strip" aria-label="系统身份">
-                <span>LINBEY//NET-OS</span>
+                <span>LINBEY//NET-KB</span>
                 <span id="os-clock">--:--</span>
-                <span>BUILD 6F57755</span>
+                <span>STATIC DATA</span>
               </div>
               <div class="hero-actions">
-                <a class="button primary" href="#library">
+                <a class="button primary" href="#commands">
                   <i data-lucide="search"></i>
-                  <span>进入资料库</span>
+                  <span>命令速查</span>
                 </a>
-                <a class="button secondary" href="#uploads">
-                  <i data-lucide="file-up"></i>
-                  <span>上传资料</span>
+                <a class="button secondary" href="#library">
+                  <i data-lucide="library"></i>
+                  <span>打开资料库</span>
                 </a>
               </div>
             </div>
           </header>
 
-          <section class="stats-grid" aria-label="知识库状态">
+          <section class="stats-grid" aria-label="资料库状态">
             <article class="stat-card">
               <i data-lucide="files"></i>
-              <span>文档</span>
+              <span>资料数量</span>
               <strong id="stat-docs">0</strong>
             </article>
             <article class="stat-card">
-              <i data-lucide="tags"></i>
-              <span>标签</span>
-              <strong id="stat-tags">0</strong>
+              <i data-lucide="archive"></i>
+              <span>PDF 数量</span>
+              <strong id="stat-pdfs">0</strong>
             </article>
             <article class="stat-card">
-              <i data-lucide="archive"></i>
-              <span>暂存</span>
-              <strong id="stat-uploads">0</strong>
+              <i data-lucide="search"></i>
+              <span>命令数量</span>
+              <strong id="stat-commands">0</strong>
             </article>
             <article class="stat-card">
               <i data-lucide="shield-check"></i>
-              <span>掌握</span>
-              <strong id="stat-progress">0/0</strong>
+              <span>排障记录</span>
+              <strong id="stat-troubles">0</strong>
             </article>
           </section>
 
-          <section class="topology-panel panel" aria-label="实验拓扑星图">
+          <section class="panel home-results-panel" id="home-results-panel" hidden>
             <div class="section-head">
               <div>
-                <span class="eyebrow">Topology</span>
-                <h2>协议拓扑星图</h2>
+                <span class="eyebrow">Search</span>
+                <h2>全站搜索结果</h2>
               </div>
             </div>
-            <div class="topology-layout">
-              <div class="topology-map" id="topology-map"></div>
-              <div class="protocol-grid" id="topology-detail"></div>
-            </div>
+            <div class="global-results" id="global-results"></div>
           </section>
 
-          <section class="os-grid" aria-label="个人网络实验 OS">
-            <article class="panel route-panel">
-              <div class="section-head">
-                <div>
-                  <span class="eyebrow">Route</span>
-                  <h2>实验路线图</h2>
-                </div>
-              </div>
-              <div class="route-map" id="route-map"></div>
-            </article>
+          <section class="dashboard-grid">
             <article class="panel command-panel">
               <div class="section-head">
                 <div>
-                  <span class="eyebrow">CLI</span>
-                  <h2>命令速查</h2>
+                  <span class="eyebrow">Command Center</span>
+                  <h2>常用命令入口</h2>
                 </div>
+                <a class="icon-link" href="#commands" aria-label="打开命令中心">
+                  <i data-lucide="arrow-right"></i>
+                </a>
               </div>
-              <div class="command-console" id="command-console"></div>
+              <div class="command-console" id="frequent-commands"></div>
             </article>
-            <article class="panel daily-panel">
-              <div class="section-head">
-                <div>
-                  <span class="eyebrow">Drill</span>
-                  <h2>今日训练</h2>
-                </div>
-              </div>
-              <div class="daily-drill" id="daily-drill"></div>
-            </article>
-            <article class="panel fault-panel">
-              <div class="section-head">
-                <div>
-                  <span class="eyebrow">Troubleshoot</span>
-                  <h2>故障排错模拟</h2>
-                </div>
-              </div>
-              <div class="fault-sim" id="fault-sim"></div>
-            </article>
-            <article class="panel activity-panel">
-              <div class="section-head">
-                <div>
-                  <span class="eyebrow">Trace</span>
-                  <h2>实验轨迹</h2>
-                </div>
-              </div>
-              <div class="activity-board" id="activity-board"></div>
-            </article>
-          </section>
 
-          <section class="split">
-            <div class="panel">
+            <article class="panel">
               <div class="section-head">
-                <h2>最近资料</h2>
-                <a class="icon-link" href="#library" aria-label="查看全部">
+                <div>
+                  <span class="eyebrow">Troubleshooting</span>
+                  <h2>最近排障记录</h2>
+                </div>
+                <a class="icon-link" href="#troubleshooting" aria-label="打开排障记录">
+                  <i data-lucide="arrow-right"></i>
+                </a>
+              </div>
+              <div class="compact-list" id="recent-troubles"></div>
+            </article>
+
+            <article class="panel">
+              <div class="section-head">
+                <div>
+                  <span class="eyebrow">Library</span>
+                  <h2>最近更新资料</h2>
+                </div>
+                <a class="icon-link" href="#library" aria-label="查看资料库">
                   <i data-lucide="arrow-right"></i>
                 </a>
               </div>
               <div id="recent-list" class="compact-list"></div>
-            </div>
-            <div class="panel">
+            </article>
+
+            <article class="panel">
               <div class="section-head">
-                <h2>标签分布</h2>
-                <button class="icon-button" id="shuffle-tags" aria-label="切换标签">
-                  <i data-lucide="refresh-cw"></i>
-                </button>
+                <div>
+                  <span class="eyebrow">Inbox</span>
+                  <h2>最近暂存</h2>
+                </div>
+                <a class="icon-link" href="#uploads" aria-label="打开暂存区">
+                  <i data-lucide="arrow-right"></i>
+                </a>
               </div>
-              <div id="tag-cloud" class="tag-cloud"></div>
-            </div>
+              <div id="recent-inbox" class="compact-list"></div>
+            </article>
           </section>
         </section>
 
@@ -224,7 +208,7 @@
           <section class="toolbar" aria-label="资料筛选">
             <label class="search-box">
               <i data-lucide="search"></i>
-              <input id="search-input" type="search" placeholder="搜索标题、标签、摘要" />
+              <input id="search-input" type="search" placeholder="搜索标题、标签、类型、用途、关键词" />
               <button class="search-clear" id="clear-search" type="button" aria-label="清空搜索">
                 <i data-lucide="x"></i>
               </button>
@@ -233,21 +217,72 @@
             <select id="sort-select" aria-label="排序方式">
               <option value="recent">最近更新</option>
               <option value="title">标题</option>
+              <option value="kind">文件类型</option>
               <option value="size">文件大小</option>
             </select>
           </section>
 
           <div class="library-layout">
-            <section class="doc-list" id="doc-list" aria-label="文档列表"></section>
-            <aside class="detail-panel" id="detail-panel" aria-label="文档详情"></aside>
+            <section class="doc-list" id="doc-list" aria-label="资料卡片列表"></section>
+            <aside class="detail-panel" id="detail-panel" aria-label="资料详情"></aside>
+          </div>
+        </section>
+
+        <section id="commands" class="view" data-view="commands">
+          <div class="topbar">
+            <div>
+              <span class="eyebrow">Command Center</span>
+              <h1>命令速查</h1>
+            </div>
+          </div>
+
+          <section class="toolbar" aria-label="命令筛选">
+            <label class="search-box">
+              <i data-lucide="search"></i>
+              <input id="command-search-input" type="search" placeholder="输入命令、协议、场景、故障现象" />
+              <button class="search-clear" id="clear-command-search" type="button" aria-label="清空命令搜索">
+                <i data-lucide="x"></i>
+              </button>
+            </label>
+            <select id="vendor-filter" aria-label="厂商筛选"></select>
+            <select id="category-filter" aria-label="命令类别筛选"></select>
+          </section>
+
+          <div class="library-layout command-layout">
+            <section class="doc-list command-list" id="command-list" aria-label="命令列表"></section>
+            <aside class="detail-panel command-detail" id="command-detail" aria-label="命令详情"></aside>
+          </div>
+        </section>
+
+        <section id="troubleshooting" class="view" data-view="troubleshooting">
+          <div class="topbar">
+            <div>
+              <span class="eyebrow">Troubleshooting Notes</span>
+              <h1>排障记录</h1>
+            </div>
+          </div>
+
+          <section class="toolbar" aria-label="排障记录筛选">
+            <label class="search-box">
+              <i data-lucide="search"></i>
+              <input id="trouble-search-input" type="search" placeholder="搜索故障现象、环境、命令、原因、标签" />
+              <button class="search-clear" id="clear-trouble-search" type="button" aria-label="清空排障搜索">
+                <i data-lucide="x"></i>
+              </button>
+            </label>
+          </section>
+
+          <div class="library-layout trouble-layout">
+            <section class="doc-list trouble-list" id="trouble-list" aria-label="排障记录列表"></section>
+            <aside class="detail-panel trouble-detail" id="trouble-detail" aria-label="排障记录详情"></aside>
           </div>
         </section>
 
         <section id="uploads" class="view" data-view="uploads">
           <div class="topbar">
             <div>
-              <span class="eyebrow">Inbox</span>
-              <h1>临时上传</h1>
+              <span class="eyebrow">Inbox / Temporary Notes</span>
+              <h1>临时暂存</h1>
             </div>
             <button class="button danger" id="clear-uploads">
               <i data-lucide="trash-2"></i>
@@ -258,7 +293,8 @@
           <section class="upload-zone" id="upload-zone">
             <input id="file-input" type="file" multiple hidden />
             <i data-lucide="cloud-upload"></i>
-            <h2>文件暂存区</h2>
+            <h2>待整理内容暂存区</h2>
+            <p>PDF、截图、命令输出、临时笔记会先放在本浏览器 IndexedDB，后续可手动整理进资料库 JSON。</p>
             <button class="button primary" id="pick-files">
               <i data-lucide="folder-open"></i>
               <span>选择文件</span>
@@ -273,36 +309,6 @@
             <div class="upload-list" id="upload-list"></div>
           </section>
         </section>
-
-        <section id="settings" class="view" data-view="settings">
-          <div class="topbar">
-            <div>
-              <span class="eyebrow">Integration</span>
-              <h1>接入配置</h1>
-            </div>
-          </div>
-
-          <div class="settings-grid">
-            <article class="panel integration-card">
-              <i data-lucide="github"></i>
-              <h2>GitHub API</h2>
-              <p>适合小型文档和 Markdown 资料，上传后可以生成一次仓库提交。</p>
-              <code>POST /api/github-upload</code>
-            </article>
-            <article class="panel integration-card">
-              <i data-lucide="database"></i>
-              <h2>对象存储</h2>
-              <p>适合 PDF、图片、数据包和大文件，页面保存索引，文件放入 R2 或 Supabase。</p>
-              <code>POST /api/storage-upload</code>
-            </article>
-            <article class="panel integration-card">
-              <i data-lucide="shield-check"></i>
-              <h2>访问控制</h2>
-              <p>私密实验资料建议接入 GitHub OAuth、Cloudflare Access 或 Supabase Auth。</p>
-              <code>GET /api/session</code>
-            </article>
-          </div>
-        </section>
       </main>
     </div>
 
@@ -311,15 +317,16 @@
       <div class="palette-panel">
         <div class="terminal-head">
           <span></span><span></span><span></span>
-          <strong>command-center</strong>
+          <strong>quick-search</strong>
         </div>
         <label class="palette-search">
           <i data-lucide="search"></i>
-          <input id="palette-input" type="search" placeholder="输入协议、实验、命令" />
+          <input id="palette-input" type="search" placeholder="输入命令、协议、资料或故障现象" />
         </label>
         <div class="palette-results" id="palette-results"></div>
       </div>
     </div>
-    <script src="./app.js?v=20260628-persona"></script>
+
+    <script src="./app.js?v=20260630-static-core"></script>
   </body>
 </html>

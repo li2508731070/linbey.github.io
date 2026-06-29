@@ -1,33 +1,29 @@
-# 个人知识库
+# 个人网络资料库 + 命令速查中心
 
-这是一个可直接部署到 GitHub Pages 的个人知识库前端原型。
+这是一个部署在 GitHub Pages 上的静态站点，用于管理个人网络资料、命令速查和排障记录。
 
-## 当前功能
+## 当前定位
 
-- 文档资料浏览、搜索、类型筛选和排序
-- 文档详情与下载
-- 浏览器本地临时上传暂存区
-- 暂存文件下载、删除、清空
-- 知识库索引导出
-- GitHub API、对象存储、访问控制的接口预留
+- 个人网络资料库：PDF、Markdown、配置文档、实验资料、课程资料、截图索引。
+- Command Center：本地 `data/commands.json` 命令速查，不接后端。
+- Troubleshooting Notes：本地 `data/troubleshooting.json` 排障记录沉淀。
+- Inbox / Temporary Notes：浏览器本地 IndexedDB 暂存待整理文件。
+
+## 数据文件
+
+- `docs/documents.json`：资料库索引。
+- `data/commands.json`：命令速查数据。
+- `data/troubleshooting.json`：排障记录数据。
+- `docs/`：PDF、Markdown、配置文件等静态资料。
+
+## 静态站限制
+
+GitHub Pages 不能保存云端上传文件。本项目不实现后端、登录、数据库、云端上传或 AI API 调用，也不暴露任何 API Key。
+
+临时暂存区只保存到当前浏览器 IndexedDB。需要正式归档时，手动把文件放入 `docs/`，再更新 `docs/documents.json`。
 
 ## 部署到 GitHub Pages
 
-1. 把本目录内容提交到你的 GitHub 仓库。
+1. 把本目录内容提交到 GitHub Pages 仓库。
 2. 在仓库 Settings -> Pages 中选择部署分支。
-3. 如果使用自定义域名，在 Pages 里配置 Custom domain。
-4. 如需使用根域名，按 GitHub 提示配置 DNS 的 A 记录；如需使用子域名，配置 CNAME。
-
-## 上传能力说明
-
-GitHub Pages 不能单独保存用户上传文件。当前上传区使用浏览器 IndexedDB 做本地暂存，刷新后仍在当前浏览器内保留。
-
-真正上线时建议二选一：
-
-- 小型文档：接 GitHub API，把上传文件提交到仓库 `uploads/` 或 `pending/`。
-- 大文件/私密资料：接 Cloudflare R2、Supabase Storage 或 S3，网站只保存索引。
-
-相关前端位置在 `app.js`：
-
-- `saveFiles(files)`：当前本地暂存入口，可替换为后端上传调用。
-- `docs`：当前静态索引，可替换为远程 JSON 或数据库查询。
+3. 自定义域名继续使用仓库中的 `CNAME`。

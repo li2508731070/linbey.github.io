@@ -1608,6 +1608,263 @@ code {
   transform: translateY(0);
 }
 
+.home-hero h1 {
+  max-width: 9em;
+}
+
+.home-search {
+  display: flex;
+  width: min(720px, 100%);
+  min-height: 58px;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0 16px;
+  padding: 0 16px;
+  border: 1px solid rgba(73, 198, 177, 0.36);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(73, 198, 177, 0.15), rgba(255, 255, 255, 0.035)),
+    rgba(7, 10, 9, 0.64);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.24);
+}
+
+.home-search svg {
+  width: 20px;
+  color: var(--teal);
+}
+
+.home-search input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 18px;
+  outline: 0;
+}
+
+.home-search input::placeholder {
+  color: rgba(242, 239, 231, 0.58);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.home-results-panel {
+  margin-top: 18px;
+}
+
+.home-results-panel[hidden] {
+  display: none;
+}
+
+.global-results {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.result-group {
+  display: grid;
+  gap: 8px;
+}
+
+.result-group h3 {
+  margin: 0;
+  color: var(--gold);
+  font-size: 14px;
+}
+
+.result-item {
+  display: grid;
+  gap: 5px;
+  min-height: 88px;
+  padding: 12px;
+  border: 1px solid rgba(233, 220, 193, 0.11);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  text-align: left;
+}
+
+.result-item:hover {
+  border-color: rgba(73, 198, 177, 0.45);
+  background: rgba(73, 198, 177, 0.1);
+}
+
+.result-item span {
+  color: var(--teal);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.result-item strong,
+.result-item small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.result-item small {
+  display: -webkit-box;
+  color: var(--muted);
+  line-height: 1.5;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.compact-item {
+  width: 100%;
+  border: 1px solid var(--line);
+  color: var(--text);
+  text-align: left;
+}
+
+.compact-empty,
+.mini-empty {
+  min-height: 78px;
+}
+
+.doc-purpose {
+  margin: -4px 0 0;
+  color: #d7cfbf;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.kv-list {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.kv-list div {
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+  border: 1px solid rgba(233, 220, 193, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.kv-list dt {
+  color: var(--teal);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.kv-list dd {
+  margin: 0;
+  color: #d7cfbf;
+  line-height: 1.6;
+}
+
+.detail-tags {
+  margin-top: 12px;
+}
+
+.text-preview {
+  max-height: 320px;
+  overflow: auto;
+  margin: 18px 0 0;
+  padding: 14px;
+  border: 1px solid rgba(73, 198, 177, 0.16);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(5, 8, 7, 0.86), rgba(10, 14, 12, 0.82)),
+    repeating-linear-gradient(180deg, transparent 0 24px, rgba(73, 198, 177, 0.035) 25px, transparent 26px);
+  color: #d9f5ef;
+  font: 13px/1.7 "Cascadia Code", Consolas, monospace;
+  white-space: pre-wrap;
+}
+
+.list-block {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.list-block > span {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.list-block ul {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+  color: #d7cfbf;
+}
+
+.command-card code,
+.command-detail h2 code {
+  display: inline;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #d9f5ef;
+}
+
+.command-detail h2 {
+  overflow-wrap: anywhere;
+}
+
+.no-command {
+  gap: 10px;
+  justify-items: center;
+  padding: 18px;
+  text-align: center;
+}
+
+.trouble-kv div {
+  border-color: rgba(73, 198, 177, 0.12);
+}
+
+.upload-zone p {
+  max-width: 620px;
+  margin: 0;
+  text-align: center;
+}
+
+@media (max-width: 1060px) {
+  .dashboard-grid,
+  .global-results {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .home-hero h1 {
+    font-size: 34px;
+  }
+
+  .home-search {
+    min-height: 52px;
+  }
+
+  .home-search input {
+    font-size: 15px;
+  }
+
+  .result-item,
+  .kv-list div {
+    min-width: 0;
+  }
+
+  .command-line {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .command-line::before {
+    display: none;
+  }
+}
+
 @keyframes drift-mesh {
   from {
     opacity: 0.46;
