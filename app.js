@@ -17,12 +17,15 @@ const state = {
   selectedTroubleId: "",
   uploads: [],
   paletteQuery: "",
+  favorites: [],
+  viewHistory: [],
 };
 
 const dbName = "personal-knowledge-base";
 const storeName = "pending-files";
 const commandCenterUrl = "https://www.h3c.com/cn/Service/Document_Software/Document_Center/Home/Switches/00-Public/Command/Command_Manual/H3C_CM_VI%28V1.01%29/?CHID=329047";
 const h3cDocsUrl = "https://www.h3c.com/cn/Service/Document_Software/Document_Center/";
+const personalStateKey = "net-kb-personal-desk";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -31,16 +34,22 @@ const fallbackIcons = {
   archive: '<path d="M21 8v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8"/><path d="M10 12h4"/><path d="M2 3h20v5H2z"/>',
   "arrow-right": '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
   "cloud-upload": '<path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20 16.6A5 5 0 0 0 18 7h-1.3A7 7 0 1 0 4 14.9"/>',
+  check: '<path d="m20 6-11 11-5-5"/>',
+  copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
   download: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>',
   "external-link": '<path d="M15 3h6v6"/><path d="m10 14 11-11"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
   files: '<path d="M20 7h-8a2 2 0 0 1-2-2V3"/><path d="M18 22H8a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6l6 6v9a2 2 0 0 1-2 2Z"/><path d="M4 16H3a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8"/>',
   "folder-open": '<path d="m6 14 1.5-2.9A2 2 0 0 1 9.2 10H20a2 2 0 0 1 1.8 2.9l-2.2 5A2 2 0 0 1 17.8 19H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h7a2 2 0 0 1 2 2v2"/>',
   "layout-dashboard": '<rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/>',
   library: '<path d="m16 6 4 14"/><path d="M12 6v14"/><path d="M8 8v12"/><path d="M4 4v16"/>',
+  history: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>',
   search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  "share-2": '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4"/><path d="m15.4 6.5-6.8 4"/>',
   "shield-check": '<path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3z"/><path d="m9 12 2 2 4-4"/>',
   "trash-2": '<path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>',
   "upload-cloud": '<path d="M12 13v8"/><path d="m8 17 4-4 4 4"/><path d="M20 16.6A5 5 0 0 0 18 7h-1.3A7 7 0 1 0 4 14.9"/>',
+  star: '<path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8-6.2-3.2L5.8 21 7 14.2l-5-4.9 6.9-1z"/>',
+  "rotate-ccw": '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>',
   x: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
 };
 
@@ -150,6 +159,116 @@ function findCommand(id) {
 
 function findTrouble(id) {
   return troubleshooting.find((item) => item.id === id);
+}
+
+function itemKey(kind, id) {
+  return `${kind}:${id}`;
+}
+
+function resolvePersonalItem(entry) {
+  const item = entry.kind === "doc" ? findDoc(entry.id) : entry.kind === "command" ? findCommand(entry.id) : findTrouble(entry.id);
+  if (!item) return null;
+  return {
+    ...entry,
+    title: entry.kind === "doc" ? item.title : entry.kind === "command" ? item.command : item.title,
+    meta: entry.kind === "doc" ? `${item.fileKind} / ${item.type}` : entry.kind === "command" ? `${item.vendor} / ${item.category}` : item.symptom,
+  };
+}
+
+function loadPersonalState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(personalStateKey) || "{}");
+    state.favorites = Array.isArray(saved.favorites) ? saved.favorites : [];
+    state.viewHistory = Array.isArray(saved.viewHistory) ? saved.viewHistory : [];
+  } catch {
+    state.favorites = [];
+    state.viewHistory = [];
+  }
+}
+
+function savePersonalState() {
+  localStorage.setItem(personalStateKey, JSON.stringify({
+    favorites: state.favorites,
+    viewHistory: state.viewHistory,
+  }));
+}
+
+function isFavorite(kind, id) {
+  const key = itemKey(kind, id);
+  return state.favorites.some((entry) => itemKey(entry.kind, entry.id) === key);
+}
+
+function toggleFavorite(kind, id) {
+  const key = itemKey(kind, id);
+  const exists = isFavorite(kind, id);
+  state.favorites = exists
+    ? state.favorites.filter((entry) => itemKey(entry.kind, entry.id) !== key)
+    : [{ kind, id }, ...state.favorites].slice(0, 30);
+  savePersonalState();
+  renderVisibleView();
+  showToast(exists ? "已取消收藏" : "已加入收藏");
+}
+
+function recordView(kind, id) {
+  const key = itemKey(kind, id);
+  state.viewHistory = [{ kind, id, viewedAt: Date.now() }, ...state.viewHistory.filter((entry) => itemKey(entry.kind, entry.id) !== key)].slice(0, 12);
+  savePersonalState();
+  renderPersonalDesk();
+}
+
+function renderPersonalItem(entry, favorite = false) {
+  const item = resolvePersonalItem(entry);
+  if (!item) return "";
+  const typeLabel = item.kind === "doc" ? "资料" : item.kind === "command" ? "命令" : "排障";
+  return `
+    <div class="desk-item">
+      <button class="compact-item" data-personal-kind="${item.kind}" data-personal-id="${escapeHtml(item.id)}" type="button">
+        <span><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.meta)}</span></span>
+        <span class="type-pill">${typeLabel}</span>
+      </button>
+      ${favorite ? `<button class="icon-button desk-remove" data-favorite-toggle="${item.kind}:${escapeHtml(item.id)}" type="button" aria-label="取消收藏 ${escapeHtml(item.title)}"><i data-lucide="x"></i></button>` : ""}
+    </div>
+  `;
+}
+
+function renderPersonalDesk() {
+  const favorites = state.favorites.map(resolvePersonalItem).filter(Boolean);
+  const recent = state.viewHistory.map(resolvePersonalItem).filter(Boolean).slice(0, 6);
+  $("#favorite-count").textContent = favorites.length;
+  $("#favorite-list").innerHTML = favorites.length
+    ? favorites.slice(0, 6).map((item) => renderPersonalItem(item, true)).join("")
+    : `<div class="empty compact-empty">在资料、命令或排障详情中点击星标收藏</div>`;
+  $("#view-history-list").innerHTML = recent.length
+    ? recent.map((item) => renderPersonalItem(item)).join("")
+    : `<div class="empty compact-empty">查看过的内容会出现在这里</div>`;
+  refreshIcons();
+}
+
+function renderDetailTools(kind, id, copyValue = "") {
+  const active = isFavorite(kind, id);
+  return `
+    <div class="detail-tools">
+      ${copyValue ? `<button class="icon-button" data-copy-value="${escapeHtml(copyValue)}" type="button" aria-label="复制命令"><i data-lucide="copy"></i></button>` : ""}
+      <button class="icon-button ${active ? "active" : ""}" data-favorite-toggle="${kind}:${escapeHtml(id)}" type="button" aria-label="${active ? "取消收藏" : "加入收藏"}"><i data-lucide="star"></i></button>
+      <button class="icon-button" data-share-item="${kind}:${escapeHtml(id)}" type="button" aria-label="复制分享链接"><i data-lucide="share-2"></i></button>
+    </div>
+  `;
+}
+
+async function copyText(value, successMessage) {
+  try {
+    await navigator.clipboard.writeText(value);
+  } catch {
+    const input = document.createElement("textarea");
+    input.value = value;
+    input.style.position = "fixed";
+    input.style.opacity = "0";
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    input.remove();
+  }
+  showToast(successMessage);
 }
 
 function scoreMatch(haystack, query) {
@@ -361,7 +480,10 @@ async function renderDocDetail() {
   const isPdf = doc.fileKind === "PDF";
   const isText = ["Markdown", "配置"].includes(doc.fileKind);
   $("#detail-panel").innerHTML = `
-    <span class="type-pill">${escapeHtml(doc.fileKind)}</span>
+    <div class="detail-heading">
+      <span class="type-pill">${escapeHtml(doc.fileKind)}</span>
+      ${renderDetailTools("doc", doc.id)}
+    </div>
     <h2>${escapeHtml(doc.title)}</h2>
     <p>${escapeHtml(doc.summary)}</p>
     <dl class="kv-list">
@@ -454,7 +576,10 @@ function renderCommandDetail() {
   const relatedDocs = relatedDocsForCommand(command);
   const relatedTroubles = relatedTroublesForCommand(command);
   $("#command-detail").innerHTML = `
-    <span class="type-pill">${escapeHtml(command.vendor)} / ${escapeHtml(command.category)}</span>
+    <div class="detail-heading">
+      <span class="type-pill">${escapeHtml(command.vendor)} / ${escapeHtml(command.category)}</span>
+      ${renderDetailTools("command", command.id, command.command)}
+    </div>
     <h2><code>${escapeHtml(command.command)}</code></h2>
     <p>${escapeHtml(command.description)}</p>
     <dl class="kv-list">
@@ -523,15 +648,18 @@ function renderTroubleDetail() {
   const item = findTrouble(state.selectedTroubleId) || troubleshooting[0];
   if (!item) return;
   $("#trouble-detail").innerHTML = `
-    <span class="type-pill">Troubleshooting Note</span>
+    <div class="detail-heading">
+      <span class="type-pill">Troubleshooting Note</span>
+      ${renderDetailTools("trouble", item.id)}
+    </div>
     <h2>${escapeHtml(item.title)}</h2>
     <dl class="kv-list trouble-kv">
       <div><dt>故障现象</dt><dd>${escapeHtml(item.symptom)}</dd></div>
       <div><dt>环境/拓扑</dt><dd>${escapeHtml(item.environment)}</dd></div>
       <div><dt>相关配置</dt><dd>${escapeHtml(item.relatedConfig?.join(" / "))}</dd></div>
-      <div><dt>排查命令</dt><dd>${escapeHtml(item.commands?.join(" / "))}</dd></div>
+      <div><dt>排查命令</dt><dd class="copy-command-list">${(item.commands || []).map((command) => `<button data-copy-value="${escapeHtml(command)}" type="button"><code>${escapeHtml(command)}</code><i data-lucide="copy"></i></button>`).join("")}</dd></div>
       <div><dt>原因定位</dt><dd>${escapeHtml(item.rootCause)}</dd></div>
-      <div><dt>解决命令</dt><dd>${escapeHtml(item.solution?.join("；"))}</dd></div>
+      <div><dt>解决命令</dt><dd class="copy-command-list">${(item.solution || []).map((command) => `<button data-copy-value="${escapeHtml(command)}" type="button"><code>${escapeHtml(command)}</code><i data-lucide="copy"></i></button>`).join("")}</dd></div>
       <div><dt>验证结果</dt><dd>${escapeHtml(item.verification)}</dd></div>
       <div><dt>总结</dt><dd>${escapeHtml(item.summary)}</dd></div>
     </dl>
@@ -619,8 +747,26 @@ function closePalette() {
   palette.setAttribute("aria-hidden", "true");
 }
 
-function setView(view) {
+function parseRoute() {
+  const [view = "overview", id = ""] = location.hash.replace(/^#/, "").split("/");
+  return { view, id: decodeURIComponent(id) };
+}
+
+function applyRouteSelection(view, id) {
+  if (!id) return;
+  if (view === "library" && findDoc(id)) state.selectedDocId = id;
+  if (view === "commands" && findCommand(id)) state.selectedCommandId = id;
+  if (view === "troubleshooting" && findTrouble(id)) state.selectedTroubleId = id;
+}
+
+function updateDetailRoute(view, id) {
+  const nextHash = `#${view}/${encodeURIComponent(id)}`;
+  if (location.hash !== nextHash) window.history.replaceState(null, "", nextHash);
+}
+
+function setView(view, selectedId = "") {
   state.view = ["overview", "library", "commands", "troubleshooting", "uploads"].includes(view) ? view : "overview";
+  applyRouteSelection(state.view, selectedId);
   $$("[data-view-link]").forEach((link) => link.classList.toggle("active", link.dataset.viewLink === state.view));
   $$("[data-view]").forEach((section) => section.classList.toggle("active", section.dataset.view === state.view));
   document.body.dataset.view = state.view;
@@ -631,6 +777,7 @@ function setView(view) {
 function renderVisibleView() {
   renderStats();
   renderHomeResults();
+  renderPersonalDesk();
   renderRecent();
   renderFrequentCommands();
   if (state.view === "library") renderLibrary();
@@ -880,26 +1027,32 @@ function exportIndex() {
 function jumpToDoc(id) {
   state.selectedDocId = id;
   state.docQuery = "";
-  if (location.hash === "#library") setView("library");
-  else location.hash = "library";
+  recordView("doc", id);
+  location.hash = `library/${encodeURIComponent(id)}`;
+  setView("library", id);
 }
 
 function jumpToCommand(id) {
   state.selectedCommandId = id;
   state.commandQuery = "";
-  if (location.hash === "#commands") setView("commands");
-  else location.hash = "commands";
+  recordView("command", id);
+  location.hash = `commands/${encodeURIComponent(id)}`;
+  setView("commands", id);
 }
 
 function jumpToTrouble(id) {
   state.selectedTroubleId = id;
   state.troubleQuery = "";
-  if (location.hash === "#troubleshooting") setView("troubleshooting");
-  else location.hash = "troubleshooting";
+  recordView("trouble", id);
+  location.hash = `troubleshooting/${encodeURIComponent(id)}`;
+  setView("troubleshooting", id);
 }
 
 function bindEvents() {
-  window.addEventListener("hashchange", () => setView(location.hash.replace("#", "") || "overview"));
+  window.addEventListener("hashchange", () => {
+    const route = parseRoute();
+    setView(route.view, route.id);
+  });
 
   $("#global-search").addEventListener("input", (event) => {
     state.globalQuery = event.target.value;
@@ -977,17 +1130,27 @@ function bindEvents() {
     const uploadJump = event.target.closest("[data-upload-jump]");
     const downloadButton = event.target.closest("[data-download-upload]");
     const deleteButton = event.target.closest("[data-delete-upload]");
+    const personalItem = event.target.closest("[data-personal-kind]");
+    const favoriteButton = event.target.closest("[data-favorite-toggle]");
+    const copyButton = event.target.closest("[data-copy-value]");
+    const shareButton = event.target.closest("[data-share-item]");
 
     if (docCard) {
       state.selectedDocId = docCard.dataset.docId;
+      recordView("doc", state.selectedDocId);
+      updateDetailRoute("library", state.selectedDocId);
       renderLibrary();
     }
     if (commandCard) {
       state.selectedCommandId = commandCard.dataset.commandId;
+      recordView("command", state.selectedCommandId);
+      updateDetailRoute("commands", state.selectedCommandId);
       renderCommands();
     }
     if (troubleCard) {
       state.selectedTroubleId = troubleCard.dataset.troubleId;
+      recordView("trouble", state.selectedTroubleId);
+      updateDetailRoute("troubleshooting", state.selectedTroubleId);
       renderTroubleshooting();
     }
     if (docLink) jumpToDoc(docLink.dataset.docLink);
@@ -996,6 +1159,24 @@ function bindEvents() {
     if (uploadJump) location.hash = "uploads";
     if (downloadButton) downloadUpload(downloadButton.dataset.downloadUpload);
     if (deleteButton) deleteUpload(deleteButton.dataset.deleteUpload);
+    if (personalItem) {
+      const { personalKind: kind, personalId: id } = personalItem.dataset;
+      if (kind === "doc") jumpToDoc(id);
+      if (kind === "command") jumpToCommand(id);
+      if (kind === "trouble") jumpToTrouble(id);
+    }
+    if (favoriteButton) {
+      event.stopPropagation();
+      const [kind, id] = favoriteButton.dataset.favoriteToggle.split(":");
+      toggleFavorite(kind, id);
+    }
+    if (copyButton) copyText(copyButton.dataset.copyValue, "命令已复制");
+    if (shareButton) {
+      const [kind, id] = shareButton.dataset.shareItem.split(":");
+      const view = kind === "doc" ? "library" : kind === "command" ? "commands" : "troubleshooting";
+      const url = `${location.origin}${location.pathname}${location.search}#${view}/${encodeURIComponent(id)}`;
+      copyText(url, "分享链接已复制");
+    }
     if (paletteItem) {
       const kind = paletteItem.dataset.paletteKind;
       const id = paletteItem.dataset.paletteId;
@@ -1030,6 +1211,12 @@ function bindEvents() {
     event.target.value = "";
   });
   $("#clear-uploads").addEventListener("click", clearUploads);
+  $("#clear-history").addEventListener("click", () => {
+    state.viewHistory = [];
+    savePersonalState();
+    renderPersonalDesk();
+    showToast("最近查看已清除");
+  });
 
   const zone = $("#upload-zone");
   ["dragenter", "dragover"].forEach((name) => {
@@ -1058,6 +1245,7 @@ async function init() {
   docs = loadedDocs.map(normalizeDoc);
   commands = loadedCommands;
   troubleshooting = loadedTroubles;
+  loadPersonalState();
   state.selectedDocId = docs[0]?.id || "";
   state.selectedCommandId = commands[0]?.id || "";
   state.selectedTroubleId = troubleshooting[0]?.id || "";
@@ -1065,7 +1253,8 @@ async function init() {
   bindEvents();
   updateClock();
   window.setInterval(updateClock, 30000);
-  setView(location.hash.replace("#", "") || "overview");
+  const route = parseRoute();
+  setView(route.view, route.id);
 }
 
 init().catch((error) => {

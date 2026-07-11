@@ -8,7 +8,7 @@
       name="description"
       content="个人网络资料库与命令速查中心：集中管理 PDF、Markdown、配置文档、实验资料、命令索引和排障记录。"
     />
-    <link rel="stylesheet" href="./styles.css?v=20260630-static-core" />
+    <link rel="stylesheet" href="./styles.css?v=20260711-personal-desk" />
   </head>
   <body>
     <div class="ambient-backdrop" aria-hidden="true">
@@ -136,6 +136,29 @@
               </div>
             </div>
             <div class="global-results" id="global-results"></div>
+          </section>
+
+          <section class="panel personal-desk" aria-label="个人工作台">
+            <div class="section-head">
+              <div>
+                <span class="eyebrow">Personal Desk</span>
+                <h2>我的工作台</h2>
+              </div>
+              <button class="button secondary compact-button" id="clear-history" type="button">
+                <i data-lucide="rotate-ccw"></i>
+                <span>清除最近查看</span>
+              </button>
+            </div>
+            <div class="personal-desk-grid">
+              <div class="desk-column">
+                <div class="desk-label"><i data-lucide="star"></i><span>收藏</span><strong id="favorite-count">0</strong></div>
+                <div class="compact-list" id="favorite-list"></div>
+              </div>
+              <div class="desk-column">
+                <div class="desk-label"><i data-lucide="history"></i><span>最近查看</span></div>
+                <div class="compact-list" id="view-history-list"></div>
+              </div>
+            </div>
           </section>
 
           <section class="dashboard-grid">
@@ -327,6 +350,6 @@
       </div>
     </div>
 
-    <script src="./app.js?v=20260630-static-core"></script>
+    <script src="./app.js?v=20260711-personal-desk"></script>
   </body>
 </html>
